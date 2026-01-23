@@ -1,0 +1,32 @@
+.custom-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 576px) {
+  .custom-padding {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+}
+
+@media (min-width: 768px) {
+  .custom-padding {
+    padding-left: 7vw;
+    padding-right: 7vw;
+  }
+}
+
+@media (min-width: 992px) {
+  .custom-padding {
+    padding-left: 9vw;
+    padding-right: 9vw;
+  }
+}
+
+.active-link {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  font-weight: 500;
+}
