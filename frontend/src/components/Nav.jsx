@@ -5,7 +5,7 @@ import Badge from "@mui/material/Badge";
 
 export default function Nav() {
   return (
-    <nav className="navbar navbar-expand-lg border-bottom">
+    <nav className="navbar navbar-expand-lg border-bottom mb-3">
       <div className="container-fluid px-4">
         {/* 1️⃣ LOGO SECTION */}
         <div className="d-flex align-items-center">
@@ -28,7 +28,7 @@ export default function Nav() {
           id="mainNavbar"
         >
           <ul className="navbar-nav gap-4">
-            <li className="nav-item">
+            <li className="nav-item text-uppercase">
               <NavLink
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active-link" : ""}`
@@ -38,7 +38,7 @@ export default function Nav() {
                 Home
               </NavLink>
             </li>
-            <li className="nav-item">
+            <li className="nav-item text-uppercase">
               <NavLink
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active-link" : ""}`
@@ -48,7 +48,7 @@ export default function Nav() {
                 Collection
               </NavLink>
             </li>
-            <li className="nav-item">
+            <li className="nav-item text-uppercase">
               <NavLink
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active-link" : ""}`
@@ -58,7 +58,7 @@ export default function Nav() {
                 About
               </NavLink>
             </li>
-            <li className="nav-item">
+            <li className="nav-item text-uppercase">
               <NavLink
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active-link" : ""}`
