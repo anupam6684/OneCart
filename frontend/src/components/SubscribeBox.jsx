@@ -10,8 +10,8 @@ export default function SubscribeBox() {
   };
 
   return (
-    <div className="text-center py-5 px-3">
-      <h1 className="mb-3">Subscribe now & get 20% off</h1>
+    <div className="text-center pt-3 pb-5 px-3">
+      <h1 className="mb-3 fs-3 fs-md-4">Subscribe now & get 20% off</h1>
       <p className="text-secondary mb-4 fs-6 fs-md-5">
         Lorem Ipsum is simply dummy text of the printing and typesetting
         industry.
