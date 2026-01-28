@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
+import { ShopContext } from "../context/ShopContext";
 
 export default function Nav() {
+  const { setShowSearch, showSearch } = useContext(ShopContext);
   return (
     <nav className="navbar navbar-expand-lg border-bottom mb-3">
       <div className="container-fluid px-4">
@@ -73,7 +75,10 @@ export default function Nav() {
 
         {/* 3️⃣ RIGHT ICONS */}
         <div className="d-flex align-items-center gap-3 ms-auto">
-          <i className="fa-solid fa-magnifying-glass"></i>
+          <i
+            onClick={() => setShowSearch(!showSearch)}
+            className="fa-solid fa-magnifying-glass"
+          ></i>
           <div className="dropdown">
             <img
               src="https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"

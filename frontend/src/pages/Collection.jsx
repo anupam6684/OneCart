@@ -9,6 +9,7 @@ export default function Product() {
   const [filterProduct, setFilterProduct] = useState([]);
   const [selectedCategory, setSelectCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
+  const { search, showSearch } = useContext(ShopContext);
 
   const handleCategoryChange = (categoty) => {
     setSelectCategory((prev) =>
@@ -36,12 +37,19 @@ export default function Product() {
         break; // keep original order
     }
 
+    //step 3: search
+    if (showSearch && search.trim()) {
+      filtered = filtered.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
     setFilterProduct(filtered);
   };
 
   useEffect(() => {
     applyFilterAndSort();
-  }, [products, selectedCategory, sortType]);
+  }, [products, selectedCategory, sortType, showSearch, search]);
 
   return (
     <div className=" my-4">

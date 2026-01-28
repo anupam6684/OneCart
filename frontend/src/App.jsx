@@ -9,11 +9,13 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
+import Searchbar from "./components/Searchbar";
 
 function App() {
   return (
     <div className=" custom-padding">
       <Nav />
+      <Searchbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
