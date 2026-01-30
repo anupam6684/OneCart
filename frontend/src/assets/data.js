@@ -1,6 +1,6 @@
 const products = [
   {
-    id: 1,
+    _id: 1,
     name: "Men Cotton T-Shirt Black",
     brand: "UrbanFit",
     category: "Men",
@@ -22,7 +22,7 @@ const products = [
     ],
   },
   {
-    id: 2,
+    _id: 2,
     name: "Men Cotton T-Shirt White",
     brand: "Roadster",
     category: "Men",
@@ -44,7 +44,7 @@ const products = [
     ],
   },
   {
-    id: 3,
+    _id: 3,
     name: "Men Polo T-Shirt Blue",
     brand: "Allen Solly",
     category: "Men",
@@ -66,7 +66,7 @@ const products = [
     ],
   },
   {
-    id: 4,
+    _id: 4,
     name: "Men Slim Fit Jeans Dark Blue",
     brand: "Levis",
     category: "Men",
@@ -88,7 +88,7 @@ const products = [
     ],
   },
   {
-    id: 5,
+    _id: 5,
     name: "Men Casual Shirt Checked",
     brand: "Roadster",
     category: "Men",
@@ -110,7 +110,7 @@ const products = [
     ],
   },
   {
-    id: 6,
+    _id: 6,
     name: "Men Formal Shirt White",
     brand: "Allen Solly",
     category: "Men",
@@ -132,7 +132,7 @@ const products = [
     ],
   },
   {
-    id: 7,
+    _id: 7,
     name: "Women Floral Dress Red",
     brand: "Berrylush",
     category: "Women",
@@ -154,7 +154,7 @@ const products = [
     ],
   },
   {
-    id: 8,
+    _id: 8,
     name: "Women Floral Dress Yellow",
     brand: "Berrylush",
     category: "Women",
@@ -175,7 +175,7 @@ const products = [
     ],
   },
   {
-    id: 9,
+    _id: 9,
     name: "Women Kurti Blue",
     brand: "Libas",
     category: "Women",
@@ -196,7 +196,7 @@ const products = [
     ],
   },
   {
-    id: 10,
+    _id: 10,
     name: "Women Skinny Jeans",
     brand: "Levis",
     category: "Women",
@@ -218,7 +218,7 @@ const products = [
     ],
   },
   {
-    id: 11,
+    _id: 11,
     name: "Unisex Hoodie Grey",
     brand: "Nike",
     category: "Unisex",
@@ -240,7 +240,7 @@ const products = [
     ],
   },
   {
-    id: 12,
+    _id: 12,
     name: "Unisex Hoodie Black",
     brand: "Adidas",
     category: "Unisex",
@@ -261,7 +261,7 @@ const products = [
     ],
   },
   {
-    id: 13,
+    _id: 13,
     name: "Men Winter Jacket",
     brand: "UrbanFit",
     category: "Men",
@@ -283,7 +283,7 @@ const products = [
     ],
   },
   {
-    id: 14,
+    _id: 14,
     name: "Men Leather Jacket",
     brand: "UrbanFit",
     category: "Men",
@@ -305,7 +305,7 @@ const products = [
     ],
   },
   {
-    id: 15,
+    _id: 15,
     name: "Women Crop Top Black",
     brand: "Berrylush",
     category: "Women",
@@ -327,7 +327,7 @@ const products = [
     ],
   },
   {
-    id: 16,
+    _id: 16,
     name: "Women Party Top",
     brand: "Berrylush",
     category: "Women",
@@ -349,7 +349,7 @@ const products = [
     ],
   },
   {
-    id: 17,
+    _id: 17,
     name: "Men Regular Fit Chinos",
     brand: "Allen Solly",
     category: "Men",
@@ -371,7 +371,7 @@ const products = [
     ],
   },
   {
-    id: 18,
+    _id: 18,
     name: "Men Track Pants Black",
     brand: "Puma",
     category: "Men",
@@ -393,7 +393,7 @@ const products = [
     ],
   },
   {
-    id: 19,
+    _id: 19,
     name: "Men Sports Shorts",
     brand: "Adidas",
     category: "Men",
@@ -415,7 +415,7 @@ const products = [
     ],
   },
   {
-    id: 20,
+    _id: 20,
     name: "Men Sleeveless Gym Vest",
     brand: "Nike",
     category: "Men",
@@ -437,7 +437,7 @@ const products = [
     ],
   },
   {
-    id: 21,
+    _id: 21,
     name: "Women Anarkali Kurti",
     brand: "Royal Heritage",
     category: "Women",
@@ -459,7 +459,7 @@ const products = [
     ],
   },
   {
-    id: 22,
+    _id: 22,
     name: "Women Palazzo Pants",
     brand: "Libas",
     category: "Women",
@@ -481,7 +481,7 @@ const products = [
     ],
   },
   {
-    id: 23,
+    _id: 23,
     name: "Women Leggings Black",
     brand: "Biba",
     category: "Women",
@@ -502,7 +502,7 @@ const products = [
     ],
   },
   {
-    id: 24,
+    _id: 24,
     name: "Women Night Suit Set",
     brand: "Berrylush",
     category: "Women",
@@ -524,7 +524,7 @@ const products = [
     ],
   },
   {
-    id: 25,
+    _id: 25,
     name: "Unisex Sweatshirt Blue",
     brand: "Adidas",
     category: "Unisex",
@@ -546,7 +546,7 @@ const products = [
     ],
   },
   {
-    id: 26,
+    _id: 26,
     name: "Unisex Joggers Grey",
     brand: "Puma",
     category: "Unisex",
@@ -568,7 +568,7 @@ const products = [
     ],
   },
   {
-    id: 27,
+    _id: 27,
     name: "Men Denim Jacket",
     brand: "Levis",
     category: "Men",
@@ -590,7 +590,7 @@ const products = [
     ],
   },
   {
-    id: 28,
+    _id: 28,
     name: "Men Printed Shirt",
     brand: "Roadster",
     category: "Men",
@@ -612,7 +612,7 @@ const products = [
     ],
   },
   {
-    id: 29,
+    _id: 29,
     name: "Men Formal Blazer",
     brand: "Allen Solly",
     category: "Men",
@@ -634,7 +634,7 @@ const products = [
     ],
   },
   {
-    id: 30,
+    _id: 30,
     name: "Men Waistcoat",
     brand: "Libas",
     category: "Men",
@@ -656,7 +656,7 @@ const products = [
     ],
   },
   {
-    id: 31,
+    _id: 31,
     name: "Women Denim Jacket",
     brand: "Levis",
     category: "Women",
@@ -678,7 +678,7 @@ const products = [
     ],
   },
   {
-    id: 32,
+    _id: 32,
     name: "Women Long Cardigan",
     brand: "Biba",
     category: "Women",
@@ -700,7 +700,7 @@ const products = [
     ],
   },
   {
-    id: 33,
+    _id: 33,
     name: "Women Saree Printed",
     brand: "Royal Heritage",
     category: "Women",
@@ -722,7 +722,7 @@ const products = [
     ],
   },
   {
-    id: 34,
+    _id: 34,
     name: "Women Lehenga Set",
     brand: "Royal Heritage",
     category: "Women",
@@ -742,7 +742,7 @@ const products = [
     ],
   },
   {
-    id: 35,
+    _id: 35,
     name: "Kids Boys T-Shirt",
     brand: "Gini & Jony",
     category: "Kids",
@@ -764,7 +764,7 @@ const products = [
     ],
   },
   {
-    id: 36,
+    _id: 36,
     name: "Kids Girls Dress",
     brand: "FirstCry",
     category: "Kids",
@@ -786,7 +786,7 @@ const products = [
     ],
   },
   {
-    id: 37,
+    _id: 37,
     name: "Men Innerwear Vest Pack",
     brand: "UrbanFit",
     category: "Men",
@@ -808,7 +808,7 @@ const products = [
     ],
   },
   {
-    id: 38,
+    _id: 38,
     name: "Women Bra Panty Set",
     brand: "Berrylush",
     category: "Women",
@@ -828,7 +828,7 @@ const products = [
     ],
   },
   {
-    id: 39,
+    _id: 39,
     name: "Men Rain Jacket",
     brand: "Nike",
     category: "Men",
@@ -851,7 +851,7 @@ const products = [
     ],
   },
   {
-    id: 40,
+    _id: 40,
     name: "Women Rain Coat",
     brand: "Adidas",
     category: "Women",
@@ -874,7 +874,7 @@ const products = [
     ],
   },
   {
-    id: 41,
+    _id: 41,
     name: "Unisex Cap",
     brand: "Fastrack",
     category: "Unisex",
@@ -897,7 +897,7 @@ const products = [
     ],
   },
   {
-    id: 42,
+    _id: 42,
     name: "Unisex Scarf",
     brand: "Fastrack",
     category: "Unisex",
@@ -918,7 +918,7 @@ const products = [
     ],
   },
   {
-    id: 43,
+    _id: 43,
     name: "Men Kurta Pyjama Set",
     brand: "Libas",
     category: "Men",
@@ -940,7 +940,7 @@ const products = [
     ],
   },
   {
-    id: 44,
+    _id: 44,
     name: "Men Sherwani",
     brand: "Royal Heritage",
     category: "Men",
@@ -963,7 +963,7 @@ const products = [
     ],
   },
   {
-    id: 45,
+    _id: 45,
     name: "Women Maxi Dress",
     brand: "Berrylush",
     category: "Women",
@@ -985,7 +985,7 @@ const products = [
     ],
   },
   {
-    id: 46,
+    _id: 46,
     name: "Women Tunic Top",
     brand: "Biba",
     category: "Women",
@@ -1007,7 +1007,7 @@ const products = [
     ],
   },
   {
-    id: 47,
+    _id: 47,
     name: "Men Cargo Pants",
     brand: "Roadster",
     category: "Men",
@@ -1030,7 +1030,7 @@ const products = [
     ],
   },
   {
-    id: 48,
+    _id: 48,
     name: "Men Half Sleeve Shirt",
     brand: "Allen Solly",
     category: "Men",
@@ -1053,7 +1053,7 @@ const products = [
     ],
   },
   {
-    id: 49,
+    _id: 49,
     name: "Women Skirt Pleated",
     brand: "Berrylush",
     category: "Women",
@@ -1076,7 +1076,7 @@ const products = [
     ],
   },
   {
-    id: 50,
+    _id: 50,
     name: "Women Office Blazer",
     brand: "Libas",
     category: "Women",
@@ -1098,7 +1098,7 @@ const products = [
     ],
   },
   {
-    id: 51,
+    _id: 51,
     name: "Men Linen Shirt Beige",
     brand: "Roadster",
     category: "Men",
@@ -1120,7 +1120,7 @@ const products = [
     ],
   },
   {
-    id: 52,
+    _id: 52,
     name: "Men Oversized T-Shirt",
     brand: "UrbanFit",
     category: "Men",
@@ -1143,7 +1143,7 @@ const products = [
     ],
   },
   {
-    id: 53,
+    _id: 53,
     name: "Men Formal Trousers Grey",
     brand: "Allen Solly",
     category: "Men",
@@ -1165,7 +1165,7 @@ const products = [
     ],
   },
   {
-    id: 54,
+    _id: 54,
     name: "Men Casual Blazer Navy",
     brand: "UrbanFit",
     category: "Men",
@@ -1188,7 +1188,7 @@ const products = [
     ],
   },
   {
-    id: 55,
+    _id: 55,
     name: "Men Sleeveless Jacket",
     brand: "UrbanFit",
     category: "Men",
@@ -1209,7 +1209,7 @@ const products = [
     ],
   },
   {
-    id: 56,
+    _id: 56,
     name: "Women Wrap Dress",
     brand: "Berrylush",
     category: "Women",
@@ -1232,7 +1232,7 @@ const products = [
     ],
   },
   {
-    id: 57,
+    _id: 57,
     name: "Women High Waist Jeans",
     brand: "Levis",
     category: "Women",
@@ -1253,7 +1253,7 @@ const products = [
     ],
   },
   {
-    id: 58,
+    _id: 58,
     name: "Women Cotton Kurti Green",
     brand: "Biba",
     category: "Women",
@@ -1275,7 +1275,7 @@ const products = [
     ],
   },
   {
-    id: 59,
+    _id: 59,
     name: "Women Palazzo Set",
     brand: "Libas",
     category: "Women",
@@ -1298,7 +1298,7 @@ const products = [
     ],
   },
   {
-    id: 60,
+    _id: 60,
     name: "Women Casual Top Striped",
     brand: "Berrylush",
     category: "Women",
@@ -1321,7 +1321,7 @@ const products = [
     ],
   },
   {
-    id: 61,
+    _id: 61,
     name: "Unisex Oversized Hoodie",
     brand: "Nike",
     category: "Unisex",
@@ -1344,7 +1344,7 @@ const products = [
     ],
   },
   {
-    id: 62,
+    _id: 62,
     name: "Unisex Winter Sweatshirt",
     brand: "Adidas",
     category: "Unisex",
@@ -1367,7 +1367,7 @@ const products = [
     ],
   },
   {
-    id: 63,
+    _id: 63,
     name: "Men Gym Track Suit",
     brand: "Puma",
     category: "Men",
@@ -1390,7 +1390,7 @@ const products = [
     ],
   },
   {
-    id: 64,
+    _id: 64,
     name: "Men Running Shorts",
     brand: "Nike",
     category: "Men",
@@ -1413,7 +1413,7 @@ const products = [
     ],
   },
   {
-    id: 65,
+    _id: 65,
     name: "Women Yoga Leggings",
     brand: "Adidas",
     category: "Women",
@@ -1436,7 +1436,7 @@ const products = [
     ],
   },
   {
-    id: 66,
+    _id: 66,
     name: "Men Beach Shorts",
     brand: "Roadster",
     category: "Men",
@@ -1459,7 +1459,7 @@ const products = [
     ],
   },
   {
-    id: 67,
+    _id: 67,
     name: "Women Summer Shorts",
     brand: "Berrylush",
     category: "Women",
@@ -1482,7 +1482,7 @@ const products = [
     ],
   },
   {
-    id: 68,
+    _id: 68,
     name: "Men Kurta Cotton",
     brand: "Libas",
     category: "Men",
@@ -1503,7 +1503,7 @@ const products = [
     ],
   },
   {
-    id: 69,
+    _id: 69,
     name: "Women Festive Kurta Set",
     brand: "Biba",
     category: "Women",
@@ -1526,7 +1526,7 @@ const products = [
     ],
   },
   {
-    id: 70,
+    _id: 70,
     name: "Men Nightwear Pyjama",
     brand: "UrbanFit",
     category: "Men",
@@ -1548,7 +1548,7 @@ const products = [
     ],
   },
   {
-    id: 71,
+    _id: 71,
     name: "Women Night Gown",
     brand: "Berrylush",
     category: "Women",
@@ -1570,7 +1570,7 @@ const products = [
     ],
   },
   {
-    id: 72,
+    _id: 72,
     name: "Unisex Winter Cap",
     brand: "Fastrack",
     category: "Unisex",
@@ -1592,7 +1592,7 @@ const products = [
     ],
   },
   {
-    id: 73,
+    _id: 73,
     name: "Unisex Gloves",
     brand: "Fastrack",
     category: "Unisex",
@@ -1614,7 +1614,7 @@ const products = [
     ],
   },
   {
-    id: 74,
+    _id: 74,
     name: "Men Woolen Sweater",
     brand: "Roadster",
     category: "Men",
@@ -1636,7 +1636,7 @@ const products = [
     ],
   },
   {
-    id: 75,
+    _id: 75,
     name: "Women Woolen Sweater",
     brand: "Biba",
     category: "Women",
@@ -1658,7 +1658,7 @@ const products = [
     ],
   },
   {
-    id: 76,
+    _id: 76,
     name: "Men Casual Sneakers",
     brand: "Nike",
     category: "Men",
@@ -1680,7 +1680,7 @@ const products = [
     ],
   },
   {
-    id: 77,
+    _id: 77,
     name: "Women Running Shoes",
     brand: "Adidas",
     category: "Women",
@@ -1703,7 +1703,7 @@ const products = [
     ],
   },
   {
-    id: 78,
+    _id: 78,
     name: "Men Leather Formal Shoes",
     brand: "Allen Solly",
     category: "Men",
@@ -1725,7 +1725,7 @@ const products = [
     ],
   },
   {
-    id: 79,
+    _id: 79,
     name: "Women Heels Party Wear",
     brand: "Berrylush",
     category: "Women",
@@ -1748,7 +1748,7 @@ const products = [
     ],
   },
   {
-    id: 80,
+    _id: 80,
     name: "Unisex Flip Flops",
     brand: "Puma",
     category: "Unisex",
@@ -1771,7 +1771,7 @@ const products = [
     ],
   },
   {
-    id: 81,
+    _id: 81,
     name: "Men Analog Wrist Watch",
     brand: "Fastrack",
     category: "Men",
@@ -1793,7 +1793,7 @@ const products = [
     ],
   },
   {
-    id: 82,
+    _id: 82,
     name: "Women Analog Wrist Watch",
     brand: "Fastrack",
     category: "Women",
@@ -1816,7 +1816,7 @@ const products = [
     ],
   },
   {
-    id: 83,
+    _id: 83,
     name: "Unisex Sunglasses",
     brand: "Fastrack",
     category: "Unisex",
@@ -1839,7 +1839,7 @@ const products = [
     ],
   },
   {
-    id: 84,
+    _id: 84,
     name: "Women Handbag",
     brand: "Berrylush",
     category: "Women",
@@ -1861,7 +1861,7 @@ const products = [
     ],
   },
   {
-    id: 85,
+    _id: 85,
     name: "Men Leather Wallet",
     brand: "Roadster",
     category: "Men",
@@ -1883,7 +1883,7 @@ const products = [
     ],
   },
   {
-    id: 86,
+    _id: 86,
     name: "Women Silver Necklace",
     brand: "Royal Heritage",
     category: "Women",
@@ -1904,7 +1904,7 @@ const products = [
     ],
   },
   {
-    id: 87,
+    _id: 87,
     name: "Women Earrings Set",
     brand: "Libas",
     category: "Women",
@@ -1926,7 +1926,7 @@ const products = [
     ],
   },
   {
-    id: 88,
+    _id: 88,
     name: "Men Baseball Cap",
     brand: "Puma",
     category: "Men",
@@ -1949,7 +1949,7 @@ const products = [
     ],
   },
   {
-    id: 89,
+    _id: 89,
     name: "Women Hair Accessories Set",
     brand: "Berrylush",
     category: "Women",
@@ -1972,7 +1972,7 @@ const products = [
     ],
   },
   {
-    id: 90,
+    _id: 90,
     name: "Men Travel Backpack",
     brand: "Nike",
     category: "Men",
@@ -1995,7 +1995,7 @@ const products = [
     ],
   },
   {
-    id: 91,
+    _id: 91,
     name: "Women Office Tote Bag",
     brand: "Libas",
     category: "Women",
@@ -2017,7 +2017,7 @@ const products = [
     ],
   },
   {
-    id: 92,
+    _id: 92,
     name: "Men Belt Leather",
     brand: "Allen Solly",
     category: "Men",
@@ -2038,7 +2038,7 @@ const products = [
     ],
   },
   {
-    id: 93,
+    _id: 93,
     name: "Women Fashion Belt",
     brand: "Libas",
     category: "Women",
@@ -2060,7 +2060,7 @@ const products = [
     ],
   },
   {
-    id: 94,
+    _id: 94,
     name: "Unisex Travel Duffel Bag",
     brand: "Adidas",
     category: "Unisex",
@@ -2083,7 +2083,7 @@ const products = [
     ],
   },
   {
-    id: 95,
+    _id: 95,
     name: "Men Socks Pack",
     brand: "UrbanFit",
     category: "Men",
@@ -2105,7 +2105,7 @@ const products = [
     ],
   },
   {
-    id: 96,
+    _id: 96,
     name: "Women Ankle Socks Pack",
     brand: "Berrylush",
     category: "Women",
@@ -2128,7 +2128,7 @@ const products = [
     ],
   },
   {
-    id: 97,
+    _id: 97,
     name: "Men Sleepwear Set",
     brand: "UrbanFit",
     category: "Men",
@@ -2150,7 +2150,7 @@ const products = [
     ],
   },
   {
-    id: 98,
+    _id: 98,
     name: "Women Sleepwear Set",
     brand: "Berrylush",
     category: "Women",
@@ -2171,7 +2171,7 @@ const products = [
     ],
   },
   {
-    id: 99,
+    _id: 99,
     name: "Unisex Bathrobe",
     brand: "Fastrack",
     category: "Unisex",
@@ -2194,7 +2194,7 @@ const products = [
     ],
   },
   {
-    id: 100,
+    _id: 100,
     name: "Men Casual Slippers",
     brand: "Puma",
     category: "Men",

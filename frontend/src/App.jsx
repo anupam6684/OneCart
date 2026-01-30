@@ -3,23 +3,27 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Orders from "./pages/Orders";
 import PlaceOrder from "./pages/PlaceOrder";
-import Product from "./pages/Product";
+import Collection from "./pages/Collection";
 import Cart from "./pages/Cart";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
+import Searchbar from "./components/Searchbar";
+import Product from "./pages/Product";
 
 function App() {
   return (
     <div className=" custom-padding">
       <Nav />
+      <Searchbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
-        <Route path="/product/:id" element={<Product />} />
+        <Route path="/collection" element={<Collection />} />
+        <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
