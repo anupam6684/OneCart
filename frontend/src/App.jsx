@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Searchbar from "./components/Searchbar";
+import Product from "./pages/Product";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/collection" element={<Collection />} />
+        <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />

@@ -3,7 +3,8 @@ import { ShopContext } from "../context/ShopContext";
 import { useLocation } from "react-router-dom";
 
 export default function Searchbar() {
-  const { search, setSearch, showSearch } = useContext(ShopContext);
+  const { search, setSearch, showSearch, setShowSearch } =
+    useContext(ShopContext);
   const location = useLocation();
 
   const isVisible = showSearch && location.pathname.includes("collection");
@@ -22,7 +23,10 @@ export default function Searchbar() {
           style={{ background: "#fafafa" }}
         />
 
-        <i className="fa-solid fa-magnifying-glass position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+        <i
+          onClick={() => setShowSearch(!showSearch)}
+          className="fa-solid fa-magnifying-glass position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+        ></i>
       </div>
     </div>
   );

@@ -87,9 +87,9 @@ export default function Product() {
 
           <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {filterProduct.map((item) => (
-              <div key={item.id} className="col">
+              <div key={item._id} className="col">
                 <ProductItem
-                  id={item.id}
+                  _id={item._id}
                   name={item.name}
                   image={item.image}
                   price={item.newPrice}

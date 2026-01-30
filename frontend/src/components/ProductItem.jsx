@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 
-export default function ProductItem({ id, name, image, price, oldPrice }) {
+export default function ProductItem({ _id, name, image, price, oldPrice }) {
   const { currency } = useContext(ShopContext);
 
   return (
-    <Link to={`/product/${id}`} className="text-decoration-none text-dark">
+    <Link to={`/product/${_id}`} className="text-decoration-none text-dark">
       {/* Image */}
       <div className="img-box mb-2 border">
         <img src={image[0]} alt={name} />
