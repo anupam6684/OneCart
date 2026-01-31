@@ -6,7 +6,7 @@ import RelatedProduct from "../components/RelatedProduct";
 
 export default function Product() {
   const { productId } = useParams();
-  const { products } = useContext(ShopContext);
+  const { products, addToCart } = useContext(ShopContext);
 
   const [productData, setProductData] = useState(null);
   const [productImg, setProductImg] = useState("");
@@ -124,15 +124,16 @@ export default function Product() {
                     {size}
                   </button>
                 ))}
-
-                {!selectedSize && (
-                  <p className="text-danger mt-2">Please select a size</p>
-                )}
               </div>
 
               {/* Buttons */}
               <div className="d-flex gap-3 my-4">
-                <button className="btn btn-dark px-4">Add to Cart</button>
+                <button
+                  onClick={() => addToCart(productData._id, selectedSize)}
+                  className="btn btn-dark px-4"
+                >
+                  Add to Cart
+                </button>
               </div>
               <hr />
               {/* notice */}

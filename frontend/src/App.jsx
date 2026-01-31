@@ -11,12 +11,14 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Searchbar from "./components/Searchbar";
 import Product from "./pages/Product";
+import { ToastContainer, toast } from "react-toastify";
 
 function App() {
   return (
     <div className=" custom-padding">
       <Nav />
       <Searchbar />
+      <ToastContainer position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

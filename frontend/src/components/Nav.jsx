@@ -5,7 +5,7 @@ import Badge from "@mui/material/Badge";
 import { ShopContext } from "../context/ShopContext";
 
 export default function Nav() {
-  const { setShowSearch, showSearch } = useContext(ShopContext);
+  const { setShowSearch, showSearch, cartCont } = useContext(ShopContext);
   return (
     <nav className="navbar navbar-expand-lg border-bottom mb-3">
       <div className="container-fluid px-4">
@@ -112,7 +112,7 @@ export default function Nav() {
           </div>
 
           <Link to="/cart" className="position-relative text-dark">
-            <Badge badgeContent={4} color="error">
+            <Badge badgeContent={cartCont} color="error" showZero>
               <ShoppingCartIcon />
             </Badge>
           </Link>
