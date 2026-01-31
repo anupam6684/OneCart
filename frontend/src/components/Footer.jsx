@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="py-5  text-dark">
       {/* Top */}
-      <div className="row gy-4 border-bottom pb-4">
+      <div className="row gy-4 border-bottom border-top pb-4">
         {/* Left */}
         <div className="col-12 col-md-6 col-lg-7">
           <Link
@@ -17,10 +17,10 @@ export default function Footer() {
           </Link>
 
           <p className="mt-4 text-muted fs-6">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            OneCart is a modern eCommerce platform built to deliver a fast,
+            secure, and user-friendly shopping experience. Designed with
+            performance and scalability in mind, OneCart brings simplicity and
+            reliability to online shopping.
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default function Footer() {
       {/* Bottom */}
       <div className="row pt-4">
         <div className="col text-center text-muted small">
-          © 2024 OneCart. All Rights Reserved.
+          © 2026 OneCart. All Rights Reserved.
         </div>
       </div>
     </footer>

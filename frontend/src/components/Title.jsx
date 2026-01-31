@@ -2,8 +2,8 @@ import React from "react";
 
 export default function Title({ text1, text2 }) {
   return (
-    <div className="text-center mt-2">
-      <h2 className="fw-semibold text-uppercase">
+    <div className="text-center my-2">
+      <h2 className="fw-semibold text-uppercase ">
         {text1} <span className="text-danger fw-bold">{text2}</span>
       </h2>
 
