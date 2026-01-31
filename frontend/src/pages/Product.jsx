@@ -151,20 +151,23 @@ export default function Product() {
             </div>
 
             <p className="p-2">
-              An e-commerce website is an online platform that facilitates the
-              buying and selling of products or services over the internet. It
-              serves as a virtual marketplace where businesses and individuals
-              can showcase their products, interact with customers, and conduct
-              transactions without the need for a physical presence. E-commerce
-              websites have gained immense popularity due to their convenience,
-              accessibility, and the global reach they offer.
+              This high-quality product is designed to deliver both comfort and
+              durability for everyday use. Crafted with premium materials, it
+              offers a perfect balance of style and functionality. Suitable for
+              daily wear, it ensures long-lasting performance while maintaining
+              a modern look.
             </p>
-            <p className="p-2">
-              E-commerce websites typically display products or services along
-              with detailed descriptions, images, prices, and any available
-              variations (e.g., sizes, colors). Each product usually has its own
-              dedicated page with relevant information.
-            </p>
+            <ul className="ms-3">
+              <li> Premium quality material</li>
+
+              <li>Comfortable and breathable design</li>
+
+              <li>Durable and long-lasting</li>
+
+              <li>Modern fit for everyday use</li>
+
+              <li>Easy to maintain</li>
+            </ul>
           </div>
 
           <RelatedProduct
