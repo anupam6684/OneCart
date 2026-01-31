@@ -17,7 +17,7 @@ export default function RelatedProduct({ category, subcategory, _id }) {
         //   item._id != _id,
       );
 
-      setRelated(productCopy.slice(0, 4)); // show only 4 related products
+      setRelated(productCopy.slice(0, 5)); // show only 4 related products
     }
   }, [products, category, subcategory]);
   return (
@@ -27,7 +27,7 @@ export default function RelatedProduct({ category, subcategory, _id }) {
         <Title text1="related" text2="product" />
       </div>
 
-      <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
         {related.map((item) => (
           <div key={item._id} className="col">
             <ProductItem
