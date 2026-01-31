@@ -38,7 +38,21 @@ export default function Product() {
             <div className="col-md-6">
               <div className="row">
                 {/* Main Image */}
-                <div className="col-12 col-md-10 order-1 order-md-2">
+                <div className="col-12 col-md-10 order-1 order-md-2 position-relative">
+                  <div className="position-absolute top-0 start-0 m-2 d-flex flex-column gap-2">
+                    {productData.isBestSeller && (
+                      <span className="badge bg-danger px-3 py-2 shadow">
+                        Best Seller
+                      </span>
+                    )}
+
+                    {productData.isNewArrival && (
+                      <span className="badge bg-success px-3 py-2 shadow">
+                        New Arrival
+                      </span>
+                    )}
+                  </div>
+
                   <img
                     src={productImg}
                     alt={productData.name}
@@ -46,8 +60,8 @@ export default function Product() {
                     style={{
                       height: "70vh",
                       maxHeight: "800px",
-                      maxWidth: "700px",
-
+                      maxWidth: "550px",
+                      // objectFit: "cover",
                       cursor: "pointer",
                     }}
                   />
@@ -73,19 +87,29 @@ export default function Product() {
 
             {/* RIGHT: Product Info */}
 
-            <div className="col-6">
-              <h2 className="fw-bold my-3">{productData.name}</h2>
+            {/* RIGHT: Product Info */}
+            <div className="col-md-6">
+              <h2 className="fw-bold my-2">{productData.name}</h2>
+
+              <p className="text-muted mb-1">
+                Brand: <strong>{productData.brand}</strong>
+              </p>
+
+              <p className="text-muted">
+                Category: {productData.category} / {productData.subcategory}
+              </p>
 
               {/* Rating */}
-              <p className="text-warning mb-3 d-flex">
+              <div className="d-flex align-items-center mb-3">
                 <Rating
-                  name="half-rating-read"
-                  defaultValue={productData.rating}
+                  name="rating-read"
+                  value={productData.rating}
                   precision={0.1}
                   readOnly
                 />
-                <span className="text-muted fs-6">({productData.rating})</span>
-              </p>
+                <span className="text-muted ms-2">({productData.rating})</span>
+              </div>
+
               {/* Price */}
               <div className="mb-3">
                 <span className="fs-3 fw-bold text-danger">
@@ -104,20 +128,35 @@ export default function Product() {
                   % OFF)
                 </span>
               </div>
+
+              {/* Stock */}
+              <div className="d-flex gap-4">
+                {" "}
+                <span
+                  className={`fw-semibold ${productData.stock > 10 ? "text-success" : "text-danger"}`}
+                >
+                  {productData.stock}
+                </span>
+                <p
+                  className={`fw-semibold ${productData.stock > 0 ? "text-success" : "text-danger"}`}
+                >
+                  {productData.stock > 0
+                    ? "___In Stock"
+                    : "___Out of Stock"}{" "}
+                </p>
+              </div>
+
               {/* Description */}
               <p className="text-muted">{productData.description}</p>
 
               {/* Sizes */}
               <div className="mb-3">
                 <h6 className="fw-bold">Select Size</h6>
-
-                {productData.sizes?.map((size, index) => (
+                {productData.sizes.map((size) => (
                   <button
-                    key={index}
-                    className={`btn  me-2 ${
-                      selectedSize === size
-                        ? "btn-dark text-white"
-                        : "btn-outline-dark"
+                    key={size}
+                    className={`btn me-2 mb-2 ${
+                      selectedSize === size ? "btn-dark" : "btn-outline-dark"
                     }`}
                     onClick={() => setSelectedSize(size)}
                   >
@@ -126,21 +165,22 @@ export default function Product() {
                 ))}
               </div>
 
-              {/* Buttons */}
-              <div className="d-flex gap-3 my-4">
-                <button
-                  onClick={() => addToCart(productData._id, selectedSize)}
-                  className="btn btn-dark px-4"
-                >
-                  Add to Cart
-                </button>
-              </div>
-              <hr />
-              {/* notice */}
-              <div className="text-muted my-5">
-                <p>100% Original product.</p>
-                <p> Cash on delivery is available on this product.</p>
-                <p> Easy return and exchange policy within 7 days.</p>
+              {/* Add to Cart */}
+              <button
+                className="btn btn-dark px-4"
+                disabled={!selectedSize}
+                onClick={() => addToCart(productData._id, selectedSize)}
+              >
+                {selectedSize ? "Add to Cart" : "Select Size"}
+              </button>
+
+              <hr className="my-4" />
+
+              {/* Product Info */}
+              <div className="text-muted">
+                <p>✔ 100% Original Product</p>
+                <p>✔ Cash on Delivery Available</p>
+                <p>✔ 7 Days Easy Return & Exchange</p>
               </div>
             </div>
           </div>
