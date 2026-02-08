@@ -7,7 +7,7 @@ import { ShopContext } from "../context/ShopContext";
 export default function Nav() {
   const { setShowSearch, showSearch, cartCont } = useContext(ShopContext);
   return (
-    <nav className="navbar navbar-expand-lg border-bottom mb-3">
+    <nav className="navbar navbar-expand-lg border-bottom mb-3  bg-white sticky-top">
       <div className="container-fluid px-4">
         {/* 1️⃣ LOGO SECTION */}
         <div className="d-flex align-items-center">
@@ -111,7 +111,7 @@ export default function Nav() {
             </ul>
           </div>
 
-          <Link to="/cart" className="position-relative text-dark">
+          <Link to="/checkout" className="position-relative text-dark">
             <Badge badgeContent={cartCont} color="error" showZero>
               <ShoppingCartIcon />
             </Badge>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import products from "../assets/data";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export const ShopContext = createContext(); // context create, Empty store
 
@@ -11,6 +12,9 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [cartCont, setCartCount] = useState(0);
+  const [step, setStep] = useState(1);
+  // navigate
+  const navigate = useNavigate();
 
   // add to cart fuction
   const addToCart = (itemId, size) => {
@@ -45,8 +49,48 @@ const ShopContextProvider = (props) => {
     setCartCount(count);
   };
 
+  // update Quantity
+  const updateQuantity = (itemId, size, quantity) => {
+    // // prevent invalid quantity
+    // if (quantity < 1) return;
+
+    const cart_data = structuredClone(cartItems);
+    const product = products.find((p) => p._id == itemId); // ID match problem
+
+    if (!product) return;
+
+    // check stock
+    if (quantity <= product.stock) {
+      cart_data[itemId][size] = quantity;
+      setCartItems(cart_data);
+    } else {
+      toast.error("Stock is not available");
+    }
+  };
+
+  //getTotal amount
+  const getTotalAmount = () => {
+    let totalAmount = 0;
+
+    for (let itemId in cartItems) {
+      const product = products.find((p) => p._id == itemId);
+      if (!product) continue;
+
+      for (let size in cartItems[itemId]) {
+        const qty = cartItems[itemId][size];
+
+        if (qty > 0) {
+          totalAmount += product.newPrice * qty;
+        }
+      }
+    }
+
+    return totalAmount;
+  };
+
   useEffect(() => {
     getCartCount();
+    console.log(cartItems);
   }, [cartItems]);
   const value = {
     currency,
@@ -58,6 +102,13 @@ const ShopContextProvider = (props) => {
     setShowSearch,
     addToCart,
     cartCont,
+    step,
+    setStep,
+    cartItems,
+    getTotalAmount,
+    navigate,
+
+    updateQuantity,
   };
   return (
     <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
