@@ -66,10 +66,7 @@ export default function AboutPage() {
         <div className="about-container2">
           {/* Left: Image & Links */}
           <div className="about-image text-center">
-            <img
-              src="https://lh3.googleusercontent.com/a/ACg8ocK0962wQqX82-lxDhv3desQwMNFrHOQ03F-S-3BZSwcmlwmAnqd=s288-c-no"
-              alt="Anupam Jana"
-            />
+            <img src="/anupam.jpg" alt="Anupam Jana" />
 
             <div className="photo-links d-flex gap-3 justify-content-center mt-5">
               <a
