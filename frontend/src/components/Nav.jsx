@@ -79,7 +79,7 @@ export default function Nav() {
             onClick={() => setShowSearch(!showSearch)}
             className="fa-solid fa-magnifying-glass"
           ></i>
-          <div className="dropdown">
+          <div className="dropdown  ">
             <img
               src="https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
               alt="userlogo"
@@ -104,8 +104,8 @@ export default function Nav() {
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <Link className="dropdown-item" to="/logout">
-                  Logout
+                <Link className="dropdown-item" to="/login">
+                  Login
                 </Link>
               </li>
             </ul>
