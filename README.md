@@ -2,7 +2,7 @@
 
 # backend
 
-# Create Folder Structure
+# Create Folder Structure of backend
 
 backend/
 │
@@ -14,3 +14,5 @@ backend/
 ├── .env
 ├── server.js
 └── package.json
+
+# admin
