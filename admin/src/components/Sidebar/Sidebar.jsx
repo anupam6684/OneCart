@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 // Material UI Icons matching the design mockups perfectly
@@ -14,48 +14,15 @@ import LocalMallIcon from "@mui/icons-material/LocalMall"; // Brand Bag Icon
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined"; // Coupons Icon
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined"; // Reports Icon
 import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined"; // Notifications Icon
+import { AdminContext } from "../../context/AdminContext";
+
+import SideMainNav from "./SideMainNav";
 
 // Change your function definition line to accept the prop:
 export default function Sidebar({ isOpen }) {
+  const { logOut } = useContext(AdminContext);
+
   // Navigation Matrix Array
-  // 1. Core Platform Workspace Section
-  const mainNav = [
-    {
-      to: "/",
-      label: "Dashboard",
-      icon: <DashboardIcon sx={{ fontSize: 20 }} />,
-    },
-    {
-      to: "/products",
-      label: "Products",
-      icon: <InventoryIcon sx={{ fontSize: 20 }} />,
-    },
-    {
-      to: "/categories",
-      label: "Categories",
-      icon: <ClassIcon sx={{ fontSize: 20 }} />,
-    },
-    {
-      to: "/orders",
-      label: "Orders",
-      icon: <ShoppingCartIcon sx={{ fontSize: 20 }} />,
-    },
-    {
-      to: "/users",
-      label: "Users",
-      icon: <PeopleIcon sx={{ fontSize: 20 }} />,
-    },
-    {
-      to: "/coupons",
-      label: "Coupons",
-      icon: <ConfirmationNumberOutlinedIcon sx={{ fontSize: 20 }} />,
-    }, // <-- ADDED
-    {
-      to: "/reports",
-      label: "Reports",
-      icon: <AssessmentOutlinedIcon sx={{ fontSize: 20 }} />,
-    }, // <-- ADDED
-  ];
 
   // 2. Control, FAQs, and Identity Profiling Section
   const settingsNav = [
@@ -75,7 +42,7 @@ export default function Sidebar({ isOpen }) {
       icon: <SettingsIcon sx={{ fontSize: 20 }} />,
     },
     {
-      to: "/logout",
+      onClick: logOut,
       label: "Logout",
       icon: <ExitToAppIcon sx={{ fontSize: 20 }} />,
     },
@@ -144,20 +111,8 @@ export default function Sidebar({ isOpen }) {
         >
           Main
         </h6>
-        <ul className="nav nav-pills flex-column gap-1">
-          {mainNav.map((item) => (
-            <li className="nav-item" key={item.to}>
-              <NavLink
-                to={item.to}
-                style={navStyleHandler}
-                className="nav-link text-white d-flex align-items-center gap-3"
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+
+        <SideMainNav />
       </div>
 
       {/* CORE HUB: SYSTEM SETTINGS OPTIONS */}
@@ -170,15 +125,26 @@ export default function Sidebar({ isOpen }) {
         </h6>
         <ul className="nav nav-pills flex-column gap-1">
           {settingsNav.map((item) => (
-            <li className="nav-item" key={item.to}>
-              <NavLink
-                to={item.to}
-                style={navStyleHandler}
-                className="nav-link text-white d-flex align-items-center gap-3"
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
+            <li className="nav-item" key={item.label}>
+              {item.to ? (
+                <NavLink
+                  to={item.to}
+                  style={navStyleHandler}
+                  className="nav-link text-white d-flex align-items-center gap-3"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </NavLink>
+              ) : (
+                <div
+                  onClick={item.onClick}
+                  className="nav-link text-white d-flex align-items-center gap-3"
+                  style={{ cursor: "pointer" }}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </div>
+              )}
             </li>
           ))}
         </ul>

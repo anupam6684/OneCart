@@ -1,38 +1,23 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import api from "./api";
 
 export const productService = {
   getAll: async () => {
-    const response = await fetch(`${API_BASE_URL}/products`);
-    return response.json();
+    return await api.get("/api/product/list");
   },
 
   getById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`);
-    return response.json();
+    return await api.get(`/api/product/single/${id}`);
   },
 
   create: async (productData) => {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(productData),
-    });
-    return response.json();
+    return await api.post("/api/product/add", productData);
   },
 
   update: async (id, productData) => {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(productData),
-    });
-    return response.json();
+    return await api.put(`/api/product/${id}/edit`, productData);
   },
 
   delete: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'DELETE',
-    });
-    return response.json();
+    return await api.delete(`/api/product/remove/${id}`);
   },
 };

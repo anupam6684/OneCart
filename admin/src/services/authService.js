@@ -1,34 +1,32 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import axios from "axios";
+import api from "./api";
+
+export const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const authService = {
   login: async (email, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    const response = await axios.post(`${API_BASE_URL}/api/user/admin`, {
+      email,
+      password,
     });
-    const data = await response.json();
-    if (data.token) {
-      localStorage.setItem('authToken', data.token);
-    }
-    return data;
+
+    return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem('authToken');
-  },
-
-  getCurrentUser: async () => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return null;
-
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.json();
+    localStorage.removeItem("token");
   },
 
   isAuthenticated: () => {
-    return !!localStorage.getItem('authToken');
+    return !!localStorage.getItem("token");
+  },
+
+  verifyToken: async () => {
+    try {
+      const response = await api.get("/api/user/verify");
+      return response.data.success;
+    } catch {
+      return false;
+    }
   },
 };

@@ -7,6 +7,7 @@ import {
   listProduct,
   removeProduct,
   singleProduct,
+  updateProduct,
 } from "../controllers/productController.js";
 
 const productRoute = express.Router();
@@ -23,7 +24,18 @@ productRoute.post(
   addProduct,
 );
 productRoute.get("/single/:id", singleProduct);
-productRoute.delete("/remove/:id", removeProduct);
+productRoute.put(
+  "/:id/edit",
+  upload.fields([
+    { name: "image1", maxCount: 1 },
+    { name: "image2", maxCount: 1 },
+    { name: "image3", maxCount: 1 },
+    { name: "image4", maxCount: 1 },
+  ]),
+  adminAuth,
+  updateProduct,
+);
+productRoute.delete("/remove/:id", adminAuth, removeProduct);
 productRoute.get("/list", listProduct);
 
 export default productRoute;

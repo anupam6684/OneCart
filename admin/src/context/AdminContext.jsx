@@ -1,43 +1,28 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useState } from "react";
+import { authService } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-const AdminContext = createContext();
+export const AdminContext = createContext();
 
-export function AdminProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(null);
-
-  const logout = useCallback(() => {
-    setUser(null);
-    localStorage.removeItem('authToken');
-  }, []);
-
-  const showNotification = useCallback((message, type = 'info') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  }, []);
-
+const AdminContextProvider = ({ children }) => {
+  // TOKEN STATE
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const navigate = useNavigate();
+  const logOut = () => {
+    console.log("LOg out click");
+    authService.logout();
+    setToken("");
+    navigate("/login");
+  };
   const value = {
-    user,
-    setUser,
-    loading,
-    setLoading,
-    notification,
-    showNotification,
-    logout,
+    token,
+    setToken,
+    logOut,
   };
 
   return (
-    <AdminContext.Provider value={value}>
-      {children}
-    </AdminContext.Provider>
+    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
   );
-}
+};
 
-export function useAdmin() {
-  const context = useContext(AdminContext);
-  if (!context) {
-    throw new Error('useAdmin must be used within AdminProvider');
-  }
-  return context;
-}
+export default AdminContextProvider;

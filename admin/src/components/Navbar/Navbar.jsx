@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Links } from "react-router-dom";
 import { useMatches } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -13,20 +13,32 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ExitToAppIcon from "@mui/icons-material/ExitToAppOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { AdminContext } from "../../context/AdminContext";
+import { useLocation } from "react-router-dom";
 
 // Change your function definition line to accept the prop:
 export default function Navbar({ toggleSidebar }) {
+  const { logOut } = useContext(AdminContext);
   const navigate = useNavigate();
   // const { adminUser, logout } = useAdmin();
   const [showDropdown, setShowDropdown] = useState(false);
+  const location = useLocation();
+  const pageTitles = {
+    "/": "Dashboard",
+    "/products": "Products",
+    "/products/add": "Add Product",
+    "/categories": "Categories",
+    "/orders": "Orders",
+    "/users": "Users",
+    "/coupons": "Coupons",
+    "/coupon/new": "Create Coupon",
+    "/reports": "Reports",
+    "/profile": "Profile",
+    "/settings": "Settings",
+    "/FAQs": "FAQs",
+  };
 
-  // const matches = useMatches(); // <-- Initialize the hook
-
-  // // Find the active route that has a title label configured
-  // const currentMatch = matches.find((match) => match.handle?.title);
-
-  // // Extract the title, fallback to "OneCart Admin" if none matched yet
-  // const pageTitle = currentMatch ? currentMatch.handle.title : "OneCart Admin";
+  const pageTitle = pageTitles[location.pathname] || "OneCart Admin";
 
   return (
     <nav
@@ -49,11 +61,8 @@ export default function Navbar({ toggleSidebar }) {
             <MenuIcon sx={{ fontSize: 22, color: "#1e293b" }} />
           </button>
 
-          <h5
-            className="mb-0 fw-semibold text-dark"
-            style={{ fontSize: "1.1rem" }}
-          >
-            {/* {pageTitle} */}
+          <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: "1.5rem" }}>
+            {pageTitle}
           </h5>
         </div>
 
@@ -157,7 +166,7 @@ export default function Navbar({ toggleSidebar }) {
                   <li>
                     <button
                       className="dropdown-item d-flex align-items-center gap-2 rounded-2 py-2 text-danger border-0 bg-transparent w-100"
-                      // onClick={logout}
+                      onClick={logOut}
                       style={{ fontSize: "0.875rem" }}
                     >
                       <ExitToAppIcon sx={{ fontSize: 18 }} />

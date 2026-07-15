@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 
 // Material UI Icons for Stats Cards & Table Actions
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard"; // Total Products
@@ -10,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ProductsTable from "../../components/ProductsTable/ProductsTable";
 
 export default function Dashboard() {
   // Dummy Analytics Data Matrix
@@ -154,195 +156,8 @@ export default function Dashboard() {
       </div>
 
       {/* 2. CORE INTERFACE AREA: PRODUCTS MANAGEMENT MODULE */}
-      <div className="card border-0 rounded-4 shadow-sm bg-white p-4">
-        {/* Table Content Panel Header Actions Toolbar */}
-        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
-          <h4
-            className="fw-bold text-dark mb-0"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Products
-          </h4>
-        </div>
 
-        {/* 3. RESPONSIVE DATA TABLE ELEMENT MATRIX */}
-        <div className="table-responsive">
-          <table
-            className="table align-middle mb-0"
-            style={{ borderColor: "#f1f5f9" }}
-          >
-            <thead>
-              <tr
-                className="text-muted"
-                style={{
-                  fontSize: "0.825rem",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.03em",
-                }}
-              >
-                <th className="border-bottom-2 pb-3" style={{ width: "60px" }}>
-                  #
-                </th>
-                <th className="border-bottom-2 pb-3">Product</th>
-                <th className="border-bottom-2 pb-3">Category</th>
-                <th className="border-bottom-2 pb-3">Price</th>
-                <th className="border-bottom-2 pb-3">Stock</th>
-                <th className="border-bottom-2 pb-3">Status</th>
-                <th
-                  className="border-bottom-2 pb-3 text-end"
-                  style={{ width: "120px" }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody style={{ fontSize: "0.9rem" }}>
-              {products.map((p, idx) => (
-                <tr key={p.id}>
-                  {/* Sequence Count */}
-                  <td className="text-muted py-3">{idx + 1}</td>
-
-                  {/* Image Grid Identity Label Block */}
-                  <td>
-                    <div className="d-flex align-items-center gap-3">
-                      <img
-                        src={p.img}
-                        alt={p.name}
-                        className="rounded-3 object-fit-cover shadow-sm border"
-                        style={{ width: "44px", height: "44px" }}
-                      />
-                      <div>
-                        <h6
-                          className="mb-0 fw-semibold text-dark"
-                          style={{ fontSize: "0.875rem" }}
-                        >
-                          {p.name}
-                        </h6>
-                        <span
-                          className="text-muted extra-small"
-                          style={{ fontSize: "0.75rem" }}
-                        >
-                          {p.desc}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Category */}
-                  <td className="text-muted">{p.category}</td>
-
-                  {/* Price */}
-                  <td className="fw-semibold text-dark">₹{p.price}</td>
-
-                  {/* Stock Levels */}
-                  <td className="text-muted">{p.stock}</td>
-
-                  {/* Status Pills */}
-                  <td>
-                    <span
-                      className={`badge rounded-2 border-0 fw-medium px-2 py-1`}
-                      style={{
-                        fontSize: "0.75rem",
-                        backgroundColor:
-                          p.status === "Active" ? "#ecfdf5" : "#fef2f2",
-                        color: p.status === "Active" ? "#10b981" : "#ef4444",
-                      }}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-
-                  {/* Action Toolbar Core Triggers */}
-                  <td className="text-end">
-                    <div className="d-inline-flex gap-2">
-                      <button
-                        className="btn p-2 border rounded-3 text-primary bg-light-hover d-flex align-items-center shadow-none"
-                        style={{ borderColor: "#e2e8f0" }}
-                      >
-                        <EditOutlinedIcon sx={{ fontSize: 16 }} />
-                      </button>
-                      <button
-                        className="btn p-2 border rounded-3 text-danger bg-light-hover d-flex align-items-center shadow-none"
-                        style={{ borderColor: "#e2e8f0" }}
-                      >
-                        <DeleteOutlineIcon sx={{ fontSize: 16 }} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* 4. FOOTER PAGINATION CONTROL INTERFACE GRID BAR */}
-        <div
-          className="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-4 pt-3 border-top"
-          style={{ borderColor: "#f1f5f9" }}
-        >
-          <span className="text-muted small" style={{ fontSize: "0.825rem" }}>
-            Showing 1 to 5 of 120 products
-          </span>
-
-          <nav>
-            <ul className="pagination pagination-sm mb-0 gap-1 border-0">
-              <li className="page-item disabled">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 text-muted"
-                  style={{ cursor: "default" }}
-                >
-                  &lsaquo;
-                </span>
-              </li>
-              <li className="page-item active">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 bg-primary text-white border-primary"
-                  style={{ cursor: "pointer" }}
-                >
-                  1
-                </span>
-              </li>
-              <li className="page-item">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 text-dark bg-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  2
-                </span>
-              </li>
-              <li className="page-item">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 text-dark bg-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  3
-                </span>
-              </li>
-              <li className="page-item disabled">
-                <span className="page-link border-0 bg-transparent text-muted px-1">
-                  ...
-                </span>
-              </li>
-              <li className="page-item">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 text-dark bg-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  24
-                </span>
-              </li>
-              <li className="page-item">
-                <span
-                  className="page-link border rounded-2 px-3 py-1 text-dark bg-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  &rsaquo;
-                </span>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <ProductsTable />
     </div>
   );
 }
