@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const userService = {
   getAll: async () => {
@@ -12,18 +14,19 @@ export const userService = {
   },
 
   create: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
+    const response = await axios;
+    // const response = await fetch(`${API_BASE_URL}/users`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(userData),
+    // });
     return response.json();
   },
 
   update: async (id, userData) => {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
     });
     return response.json();
@@ -31,7 +34,7 @@ export const userService = {
 
   delete: async (id) => {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
     return response.json();
   },

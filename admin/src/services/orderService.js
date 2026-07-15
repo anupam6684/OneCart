@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const orderService = {
   getAll: async () => {
@@ -13,8 +13,8 @@ export const orderService = {
 
   create: async (orderData) => {
     const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderData),
     });
     return response.json();
@@ -22,8 +22,8 @@ export const orderService = {
 
   update: async (id, orderData) => {
     const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderData),
     });
     return response.json();

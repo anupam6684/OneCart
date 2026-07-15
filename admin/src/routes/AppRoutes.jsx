@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "../layout/AdminLayout";
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Products from "../pages/Products/Products";
-import AddProduct from "../pages/AddProduct/AddProduct";
-import UpdateProduct from "../pages/UpdateProduct/UpdateProduct";
+import AddProduct from "../pages/Products/AddProduct";
+import UpdateProduct from "../pages/Products/UpdateProduct";
 import Orders from "../pages/Orders/Orders";
 import Categories from "../pages/Categories/Categories";
 import Users from "../pages/Users/Users";
@@ -17,13 +17,25 @@ import FAQs from "../pages/FAQs/FAQs";
 import NotFound from "../pages/Notfound/NotFound";
 import CreateCoupon from "../pages/Coupons/CreateCoupon";
 
+import { AdminContext } from "../context/AdminContext";
+import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
+import ProductDetails from "../pages/Products/ProductDetails";
+
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Login Route */}
       <Route path="/login" element={<Login />} />
 
-      {/* Main Admin Base Frame */}
-      <Route path="/" element={<AdminLayout />}>
+      {/* Protected Admin Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Dashboard />} handle={{ title: "Dashboard" }} />
 
         {/* Route labels attached directly here */}
@@ -33,6 +45,12 @@ export default function AppRoutes() {
           element={<Products />}
           handle={{ title: "Products" }}
         />
+        <Route
+          path="product/:id"
+          element={<ProductDetails />}
+          handle={{ title: "Product Details" }}
+        />
+
         <Route
           path="products/add"
           element={<AddProduct />}

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 // import { useAdmin } from '../../context/AdminContext';
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Material UI Icons
 import StorefrontIcon from "@mui/icons-material/Storefront";
@@ -15,9 +15,15 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 
+// notification
+import { toast } from "react-toastify";
+
+import { authService } from "../../services/authService";
+import { AdminContext } from "../../context/AdminContext";
+
 const Login = () => {
-  // const { login } = useAdmin();
-  // const navigate = useNavigate();
+  const { setToken } = useContext(AdminContext);
+  const navigate = useNavigate();
 
   // State Management
   const [email, setEmail] = useState("admin@gmail.com");
@@ -25,12 +31,26 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate authentication context check
-    if (email && password) {
-      console.log({ email });
-      // navigate('/dashboard');
+
+    try {
+      const data = await authService.login(email, password);
+
+      if (data.success && data.token) {
+        localStorage.setItem("token", data.token);
+
+        setToken(data.token);
+
+        toast.success("Login Successful");
+
+        navigate("/", { replace: true }); // 👈 Missing
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
     }
   };
 
@@ -82,7 +102,7 @@ const Login = () => {
             <br />
             Admin! 👋
           </h1>
-          <p className="text-muted mb-5" style={{ fontSize: "0.95rem" }}>
+          <p className=" mb-5" style={{ fontSize: "0.95rem" }}>
             Sign in to your OneCart admin account and manage your store
             effortlessly.
           </p>
@@ -104,10 +124,7 @@ const Login = () => {
                 <h6 className="mb-1 fw-semibold text-white small">
                   Dashboard Overview
                 </h6>
-                <p
-                  className="mb-0 text-muted extra-small"
-                  style={{ fontSize: "0.8rem" }}
-                >
+                <p className="mb-0  extra-small" style={{ fontSize: "0.8rem" }}>
                   Get real-time insights into your store performance and
                   analytics.
                 </p>
@@ -129,10 +146,7 @@ const Login = () => {
                 <h6 className="mb-1 fw-semibold text-white small">
                   Manage Products
                 </h6>
-                <p
-                  className="mb-0 text-muted extra-small"
-                  style={{ fontSize: "0.8rem" }}
-                >
+                <p className="mb-0  extra-small" style={{ fontSize: "0.8rem" }}>
                   Add, edit and manage your products with ease.
                 </p>
               </div>
@@ -156,10 +170,7 @@ const Login = () => {
                 <h6 className="mb-1 fw-semibold text-white small">
                   Track Orders
                 </h6>
-                <p
-                  className="mb-0 text-muted extra-small"
-                  style={{ fontSize: "0.8rem" }}
-                >
+                <p className="mb-0  extra-small" style={{ fontSize: "0.8rem" }}>
                   View and manage customer orders and deliveries.
                 </p>
               </div>
@@ -180,10 +191,7 @@ const Login = () => {
                 <h6 className="mb-1 fw-semibold text-white small">
                   Manage Users
                 </h6>
-                <p
-                  className="mb-0 text-muted extra-small"
-                  style={{ fontSize: "0.8rem" }}
-                >
+                <p className="mb-0  extra-small" style={{ fontSize: "0.8rem" }}>
                   View and manage customer accounts and permissions.
                 </p>
               </div>
@@ -207,7 +215,22 @@ const Login = () => {
 
         {/* Footer Copy */}
         <div
-          className="text-muted extra-small"
+          className="position-absolute bottom-0 end-0 m-4 opacity-20"
+          style={{ zIndex: 1, height: "300px", width: "300px" }}
+        >
+          <img
+            src="/login-cart.png"
+            alt="Cart Illustration"
+            className="img-fluid"
+            style={{
+              maxHeight: "50%",
+              objectFit: "contain",
+              transform: "translateY(20px)",
+            }}
+          />
+        </div>
+        <div
+          className=" extra-small"
           style={{ fontSize: "0.75rem", zIndex: 1 }}
         >
           © 2024 OneCart Admin. All rights reserved.
@@ -250,7 +273,7 @@ const Login = () => {
             >
               Admin Login
             </h3>
-            <p className="text-center text-muted mb-4 small">
+            <p className="text-center  mb-4 small">
               Enter your credentials to access dashboard
             </p>
 
@@ -265,10 +288,7 @@ const Login = () => {
                   className="input-group border rounded-3 px-2 bg-white align-items-center"
                   style={{ height: "48px" }}
                 >
-                  <MailOutlineIcon
-                    className="text-muted me-2"
-                    sx={{ fontSize: 20 }}
-                  />
+                  <MailOutlineIcon className=" me-2" sx={{ fontSize: 20 }} />
                   <input
                     type="email"
                     className="form-control border-0 p-0 shadow-none bg-transparent"
@@ -290,10 +310,7 @@ const Login = () => {
                   className="input-group border rounded-3 px-2 bg-white align-items-center"
                   style={{ height: "48px" }}
                 >
-                  <LockOutlinedIcon
-                    className="text-muted me-2"
-                    sx={{ fontSize: 20 }}
-                  />
+                  <LockOutlinedIcon className=" me-2" sx={{ fontSize: 20 }} />
                   <input
                     type={showPassword ? "text" : "password"}
                     className="form-control border-0 p-0 shadow-none bg-transparent"
@@ -305,7 +322,7 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    className="btn border-0 p-0 text-muted shadow-none d-flex align-items-center"
+                    className="btn border-0 p-0  shadow-none d-flex align-items-center"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
@@ -329,7 +346,7 @@ const Login = () => {
                     style={{ cursor: "pointer", width: "16px", height: "16px" }}
                   />
                   <label
-                    className="form-check-label small text-muted user-select-none"
+                    className="form-check-label small  user-select-none"
                     htmlFor="rememberCheck"
                     style={{ cursor: "pointer" }}
                   >
@@ -360,9 +377,9 @@ const Login = () => {
 
               {/* Decorative Partition Split */}
               <div className="position-relative text-center my-4">
-                <hr className="text-muted opacity-25" />
+                <hr className=" opacity-25" />
                 <span
-                  className="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted extra-small"
+                  className="position-absolute top-50 start-50 translate-middle bg-white px-3  extra-small"
                   style={{ fontSize: "0.75rem" }}
                 >
                   or
@@ -382,7 +399,7 @@ const Login = () => {
 
         {/* Tablet / Mobile View Footer Copy Anchor */}
         <div
-          className="text-muted extra-small d-block d-md-none mt-4"
+          className=" extra-small d-block d-md-none mt-4"
           style={{ fontSize: "0.75rem" }}
         >
           © 2024 OneCart Admin. All rights reserved.
