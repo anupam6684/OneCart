@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import products from "../assets/data";
+// import products from "../assets/data";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { productService } from "../services/productService";
 
 export const ShopContext = createContext(); // context create, Empty store
 
@@ -13,9 +14,21 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [cartCont, setCartCount] = useState(0);
   const [step, setStep] = useState(1);
+  const [products, setProducts] = useState([]);
+
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
   // navigate
   const navigate = useNavigate();
-
+  // products from DB
+  const fatchProducts = async () => {
+    try {
+      const response = await productService.getAll();
+      setProducts(response.data.products);
+      console.log(response.data.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // add to cart fuction
   const addToCart = (itemId, size) => {
     if (!size) {
@@ -87,11 +100,16 @@ const ShopContextProvider = (props) => {
 
     return totalAmount;
   };
+  // Fetch products only once
+  useEffect(() => {
+    fatchProducts();
+  }, []);
 
+  // Update cart count whenever cart changes
   useEffect(() => {
     getCartCount();
-    console.log(cartItems);
   }, [cartItems]);
+
   const value = {
     currency,
     delivery_fee,
@@ -108,6 +126,7 @@ const ShopContextProvider = (props) => {
     getTotalAmount,
     navigate,
 
+    setToken,
     updateQuantity,
   };
   return (

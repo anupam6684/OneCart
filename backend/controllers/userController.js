@@ -15,12 +15,15 @@ const loginUser = async (req, res) => {
     //find user from DB
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.json({ success: false, msg: "user does not exis" });
+      return res.json({ success: false, message: "user does not exis" });
     }
     // password check
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.json({ success: false, msg: "Invalid username or password" });
+      return res.json({
+        success: false,
+        message: "Invalid username or password",
+      });
     }
     // create jwt token
     const token = await CreateToken(user._id);
@@ -35,18 +38,20 @@ const loginUser = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    console.log(username, email, password);
     // checking user already exist or not
     const exists = await userModel.findOne({ email });
     if (exists) {
-      return res.json({ success: false, msg: "user already exists" });
+      return res.json({ success: false, message: "user already exists" });
     }
     // validating email formet & strong password
     if (!validator.isEmail(email)) {
-      return res.json({ success: false, msg: "Please Enter a valide Email" });
+      return res.json({
+        success: false,
+        message: "Please Enter a valide Email",
+      });
     }
-    if (!validator.isStrongPassword(password)) {
-      return res.json({ success: false, msg: "weak password" });
-    }
+
     // hashing password with salt
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
@@ -61,7 +66,7 @@ const registerUser = async (req, res) => {
     // crate  jwt token
     const token = await CreateToken(user._id);
     //for save in frontend so, sned token
-    res.json({ success: true, token });
+    res.json({ success: true, token, user });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });

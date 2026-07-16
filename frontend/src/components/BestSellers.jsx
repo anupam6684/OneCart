@@ -13,7 +13,7 @@ export default function BestSellers() {
     setBestSellers(
       products.filter((item) => item.isBestSeller).slice(0, Linit),
     );
-  }, []);
+  }, [products]);
   return (
     <div className=" my-5">
       <div className="text-center pb-4">
