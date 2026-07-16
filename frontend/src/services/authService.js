@@ -13,7 +13,6 @@ export const authService = {
     return response.data;
   },
   register: async (username, email, password) => {
-    console.log(username);
     const response = await axios.post(`${API_BASE_URL}/api/user/register`, {
       email,
       username,
@@ -21,10 +20,6 @@ export const authService = {
     });
 
     return response.data;
-  },
-
-  logout: () => {
-    localStorage.removeItem("token");
   },
 
   isAuthenticated: () => {

@@ -3,9 +3,16 @@ import { Link, NavLink } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import { ShopContext } from "../context/ShopContext";
+import { logoutUser } from "../controllers/userController";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Nav() {
-  const { setShowSearch, showSearch, cartCont } = useContext(ShopContext);
+  const navigate = useNavigate();
+
+  const { setShowSearch, showSearch, cartCont, token, setToken } =
+    useContext(ShopContext);
+
   return (
     <nav className="navbar navbar-expand-lg border-bottom mb-3  bg-white sticky-top">
       <div className="container-fluid px-4">
@@ -90,24 +97,45 @@ export default function Nav() {
             />
 
             <ul className="dropdown-menu dropdown-menu-end">
-              <li>
-                <Link className="dropdown-item" to="/profile">
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item" to="orders">
-                  Orders
-                </Link>
-              </li>
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-              <li>
-                <Link className="dropdown-item" to="/login">
-                  Login
-                </Link>
-              </li>
+              {token ? (
+                <>
+                  <li>
+                    <Link className="dropdown-item" to="/orders">
+                      Orders
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link className="dropdown-item" to="/profile">
+                      Profile
+                    </Link>
+                  </li>
+
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+
+                  <li>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => {
+                        logoutUser();
+                        setToken("");
+                        navigate("/login");
+                        toast.success("Logout SuccessFully");
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link className="dropdown-item" to="/login">
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 

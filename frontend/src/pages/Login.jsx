@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 import { ShopContext } from "../context/ShopContext";
+import { registerUser, loginUser } from "../controllers/userController";
 
 export default function Login() {
   const { setToken } = useContext(ShopContext);
@@ -17,32 +18,31 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (currentState == "login") {
-      try {
-        const data = await authService.login(email, password);
-        console.log(data);
-        if (data.success && data.token) {
-          localStorage.setItem("token", data.token);
 
+    try {
+      // LOGIN
+      if (currentState === "login") {
+        const data = await loginUser(email, password);
+
+        if (data?.success && data?.token) {
+          localStorage.setItem("token", data.token);
           setToken(data.token);
 
           toast.success("Login Successful");
 
           navigate("/");
         } else {
-          toast.error(data.message);
+          console.log(data);
+          toast.error(data?.message || "Login failed");
         }
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
       }
-    } else {
-      try {
-        const data = await authService.register(username, email, password);
 
-        if (data.success && data.token) {
+      // REGISTER
+      else {
+        const data = await registerUser(username, email, password);
+
+        if (data?.success && data?.token) {
           localStorage.setItem("token", data.token);
-
           setToken(data.token);
 
           toast.success("Register Successful");
@@ -51,14 +51,15 @@ export default function Login() {
             setCurrentState("login");
           }, 1500);
         } else {
-          toast.error(data.message);
+          toast.error(data?.message || "Registration failed");
         }
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
       }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message || "Something went wrong");
     }
   };
+
   return (
     <div
       className=" d-flex justify-content-center align-items-center"

@@ -95,4 +95,15 @@ const adminLogin = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin };
+const profile = async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await userModel.findById(userId).select("-password");
+
+  res.json({
+    success: true,
+    user,
+  });
+};
+
+export { loginUser, registerUser, adminLogin, profile };
