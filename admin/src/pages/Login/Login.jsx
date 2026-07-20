@@ -27,7 +27,7 @@ const Login = () => {
 
   // State Management
   const [email, setEmail] = useState("admin@gmail.com");
-  const [password, setPassword] = useState("admin@123");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
