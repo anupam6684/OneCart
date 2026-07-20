@@ -82,7 +82,7 @@ export default function Nav() {
         {/* ADMIN BUTTON */}
         <div className="ms-auto me-3">
           <Link
-            to="https://onecart-admin.vercel.app"
+            to="https://one-cart-admin-five.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-dark rounded-pill px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2"
