@@ -1,9 +1,9 @@
 import productModel from "../models/productModel.js";
+import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 // function of product add
 const addProduct = async (req, res) => {
   try {
-    // value fatch from req.body
     const {
       name,
       brand,
@@ -11,7 +11,6 @@ const addProduct = async (req, res) => {
       subcategory,
       oldPrice,
       newPrice,
-
       stock,
       isBestSeller,
       isNewArrival,
@@ -20,35 +19,24 @@ const addProduct = async (req, res) => {
       sizes,
     } = req.body;
 
-    //image fatch from req.files
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    const image1 = req.files.image1?.[0];
+    const image2 = req.files.image2?.[0];
+    const image3 = req.files.image3?.[0];
+    const image4 = req.files.image4?.[0];
 
-    // image url array create
-    const imageUrls = [image1, image2, image3, image4]
-      .filter((item) => item !== undefined)
-      .map((imageUrl) => imageUrl.path);
-
-    //checking required fields name, brand, category
     if (!name || !brand || !category) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Missing required fields",
       });
     }
 
-    // price and stock must be numbers
-
     if (isNaN(oldPrice) || isNaN(newPrice) || isNaN(stock)) {
-      return res.json({
+      return res.status(400).json({
         success: false,
-        message: "Price and stock must be numbers",
+        message: "Price and Stock must be numbers",
       });
     }
-
-    //size and color must be in json format
 
     let parsedColors;
     let parsedSizes;
@@ -56,47 +44,45 @@ const addProduct = async (req, res) => {
     try {
       parsedColors = JSON.parse(colors);
       parsedSizes = JSON.parse(sizes);
-    } catch (error) {
-      return res.json({
+    } catch {
+      return res.status(400).json({
         success: false,
         message: "Invalid colors or sizes format",
       });
     }
-    // create product data object
-    const productData = {
+
+    const images = [image1, image2, image3, image4].filter(Boolean);
+
+    const imageUrls = await Promise.all(
+      images.map(async (file) => {
+        const result = await uploadToCloudinary(file.buffer);
+        return result.secure_url;
+      }),
+    );
+
+    const product = new productModel({
       name,
       description,
       brand,
       category,
       subcategory,
-      // convert oldPrice, newPrice, rating, and stock to numbers
       oldPrice: Number(oldPrice),
       newPrice: Number(newPrice),
-
       stock: Number(stock),
-      // convert isBestSeller and isNewArrival to boolean
-      isBestSeller: isBestSeller === "true", // return true if isBestSeller is "true", otherwise return false
-      isNewArrival: isNewArrival === "true", //same as above
-      // assign parsed colors and sizes
+      isBestSeller: isBestSeller === "true",
+      isNewArrival: isNewArrival === "true",
       colors: parsedColors,
       sizes: parsedSizes,
-      // assign current date and time to date field
-      date: Date.now(),
-      // assign image urls array to image field
       image: imageUrls,
-    };
+      date: Date.now(),
+    });
 
-    // create product
-    const newProduct = new productModel(productData);
-    //dbug
-    console.log(newProduct);
-
-    // store product in DB
-    await newProduct.save();
+    await product.save();
 
     return res.status(201).json({
       success: true,
       message: "Product Added Successfully",
+      product,
     });
   } catch (error) {
     console.log(error);
@@ -150,6 +136,16 @@ const singleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const product = await productModel.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     const {
       name,
       brand,
@@ -157,7 +153,6 @@ const updateProduct = async (req, res) => {
       subcategory,
       oldPrice,
       newPrice,
-
       stock,
       isBestSeller,
       isNewArrival,
@@ -166,84 +161,61 @@ const updateProduct = async (req, res) => {
       sizes,
     } = req.body;
 
-    //image fatch from req.files
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    let imageUrls = [...product.image];
 
-    // image url array create
-    const imageUrls = [image1, image2, image3, image4]
-      .filter((item) => item !== undefined)
-      .map((imageUrl) => imageUrl.path);
+    const uploadImage = async (fieldName, index) => {
+      if (req.files?.[fieldName]?.[0]) {
+        const result = await uploadToCloudinary(req.files[fieldName][0].buffer);
 
-    //checking required fields name, brand, category
-    if (!name || !brand || !category) {
-      return res.json({
-        success: false,
-        message: "Missing required fields",
-      });
-    }
-
-    // price and stock must be numbers
-
-    if (isNaN(oldPrice) || isNaN(newPrice) || isNaN(stock)) {
-      return res.json({
-        success: false,
-        message: "Price and stock must be numbers",
-      });
-    }
-
-    //size and color must be in json format
-
-    let parsedColors;
-    let parsedSizes;
-
-    try {
-      parsedColors = JSON.parse(colors);
-      parsedSizes = JSON.parse(sizes);
-    } catch (error) {
-      return res.json({
-        success: false,
-        message: "Invalid colors or sizes format",
-      });
-    }
-
-    // create product data object
-    const productData = {
-      name,
-      description,
-      brand,
-      category,
-      subcategory,
-      // convert oldPrice, newPrice, rating, and stock to numbers
-      oldPrice: Number(oldPrice),
-      newPrice: Number(newPrice),
-
-      stock: Number(stock),
-      // convert isBestSeller and isNewArrival to boolean
-      isBestSeller: isBestSeller === "true", // return true if isBestSeller is "true", otherwise return false
-      isNewArrival: isNewArrival === "true", //same as above
-      // assign parsed colors and sizes
-      colors: parsedColors,
-      sizes: parsedSizes,
-      // assign current date and time to date field
-      date: Date.now(),
-      // assign image urls array to image field
-      image: imageUrls,
+        imageUrls[index] = result.secure_url;
+      }
     };
 
-    const updateProduct = await productModel.findByIdAndUpdate(
-      id,
-      productData,
-      { new: true },
-    );
+    await uploadImage("image1", 0);
+    await uploadImage("image2", 1);
+    await uploadImage("image3", 2);
+    await uploadImage("image4", 3);
 
-    return res.status(201).json({
+    product.name = name || product.name;
+    product.brand = brand || product.brand;
+    product.category = category || product.category;
+    product.subcategory = subcategory || product.subcategory;
+    product.description = description || product.description;
+
+    product.oldPrice = oldPrice ? Number(oldPrice) : product.oldPrice;
+
+    product.newPrice = newPrice ? Number(newPrice) : product.newPrice;
+
+    product.stock = stock ? Number(stock) : product.stock;
+
+    if (colors) {
+      product.colors = JSON.parse(colors);
+    }
+
+    if (sizes) {
+      product.sizes = JSON.parse(sizes);
+    }
+
+    if (isBestSeller !== undefined) {
+      product.isBestSeller = isBestSeller === "true";
+    }
+
+    if (isNewArrival !== undefined) {
+      product.isNewArrival = isNewArrival === "true";
+    }
+
+    product.image = imageUrls;
+
+    await product.save();
+
+    return res.status(200).json({
       success: true,
-      message: updateProduct,
+      message: "Product updated successfully",
+      product,
     });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
