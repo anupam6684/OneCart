@@ -77,20 +77,20 @@ export default function Nav() {
                 Contact
               </NavLink>
             </li>
+          <li className="nav-item mt-2 mt-lg-0">
+          <a
+          href="https://one-cart-admin-five.vercel.app/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-dark rounded-pill px-4"
+          >
+        <i className="fa-solid fa-shield-halved me-2"></i>
+        Admin
+      </a>
+</li>
           </ul>
         </div>
-        {/* ADMIN BUTTON */}
-        <div className="ms-auto me-3">
-          <Link
-            to="https://one-cart-admin-five.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-dark rounded-pill px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2"
-          >
-            <i className="fa-solid fa-shield-halved"></i>
-            Admin Panel
-          </Link>
-        </div>
+       
 
         {/* 3️⃣ RIGHT ICONS */}
         <div className="d-flex align-items-center gap-3 ms-auto">
