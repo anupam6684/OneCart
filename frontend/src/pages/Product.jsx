@@ -4,30 +4,62 @@ import { ShopContext } from "../context/ShopContext";
 import Rating from "@mui/material/Rating";
 import RelatedProduct from "../components/RelatedProduct";
 
+import { fetchProduct } from "../controllers/productController";
+
 export default function Product() {
   const { productId } = useParams();
-  const { products, addToCart } = useContext(ShopContext);
+
+  const [loading, setLoading] = useState(true);
 
   const [productData, setProductData] = useState(null);
   const [productImg, setProductImg] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
+  const { addToCart } = useContext(ShopContext);
+  useEffect(() => {
+    const loadProduct = async () => {
+      setLoading(true);
 
-  const findProduct = () => {
-    if (!products.length) return;
+      const product = await fetchProduct(productId);
 
-    const product = products.find(
-      (item) => String(item._id) === String(productId),
-    );
+      if (!product) {
+        setLoading(false);
+        return;
+      }
 
-    if (product) {
+      await Promise.all(
+        product.image.map((src) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        }),
+      );
+
       setProductData(product);
-      setProductImg(product.image?.[0] || "");
-    }
-  };
+      setProductImg(product.image[0]);
+
+      setLoading(false);
+    };
+
+    loadProduct();
+  }, [productId]);
 
   useEffect(() => {
-    findProduct();
-  }, [productId, products]);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // or "auto"
+    });
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center py-5">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

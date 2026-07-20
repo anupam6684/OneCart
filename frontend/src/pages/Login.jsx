@@ -1,11 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Title from "../components/Title";
+import { authService } from "../services/authService";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+import { ShopContext } from "../context/ShopContext";
+import { registerUser, loginUser } from "../controllers/userController";
 
 export default function Login() {
+  const { setToken } = useContext(ShopContext);
   const [currentState, setCurrentState] = useState("login");
-  const handleSubmit = (event) => {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    try {
+      // LOGIN
+      if (currentState === "login") {
+        const data = await loginUser(email, password);
+
+        if (data?.success && data?.token) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+
+          toast.success("Login Successful");
+
+          navigate("/");
+        } else {
+          console.log(data);
+          toast.error(data?.message || "Login failed");
+        }
+      }
+
+      // REGISTER
+      else {
+        const data = await registerUser(username, email, password);
+
+        if (data?.success && data?.token) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+
+          toast.success("Register Successful");
+
+          setTimeout(() => {
+            setCurrentState("login");
+          }, 1500);
+        } else {
+          toast.error(data?.message || "Registration failed");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message || "Something went wrong");
+    }
   };
+
   return (
     <div
       className=" d-flex justify-content-center align-items-center"
@@ -47,6 +101,8 @@ export default function Login() {
                     type="text"
                     className="form-control"
                     placeholder="Enter UserName"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </div>
@@ -57,6 +113,8 @@ export default function Login() {
                   type="email"
                   className="form-control"
                   placeholder="Enter email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
                   required
                 />
               </div>
@@ -68,6 +126,8 @@ export default function Login() {
                   className="form-control"
                   placeholder="Enter password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {currentState === "login" ? (

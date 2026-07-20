@@ -49,6 +49,7 @@ export default function Product() {
 
   useEffect(() => {
     applyFilterAndSort();
+    console.log(products);
   }, [products, selectedCategory, sortType, showSearch, search]);
 
   return (
