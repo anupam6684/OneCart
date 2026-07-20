@@ -14,6 +14,7 @@ export default function Product() {
   const [productData, setProductData] = useState(null);
   const [productImg, setProductImg] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
+  const { addToCart } = useContext(ShopContext);
   useEffect(() => {
     const loadProduct = async () => {
       setLoading(true);

@@ -38,7 +38,7 @@ const loginUser = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log(username, email, password);
+
     // checking user already exist or not
     const exists = await userModel.findOne({ email });
     if (exists) {
@@ -96,14 +96,21 @@ const adminLogin = async (req, res) => {
 };
 
 const profile = async (req, res) => {
-  const userId = req.user.id;
+  try {
+    const userId = req.user.id;
 
-  const user = await userModel.findById(userId).select("-password");
+    const user = await userModel.findById(userId).select("-password");
 
-  res.json({
-    success: true,
-    user,
-  });
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export { loginUser, registerUser, adminLogin, profile };
