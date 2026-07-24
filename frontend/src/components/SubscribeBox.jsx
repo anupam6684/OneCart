@@ -1,13 +1,29 @@
+import { subscriberService } from "../services/subscriberService.js";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 export default function SubscribeBox() {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(email); // This will log the input value
 
-    toast.success(`Subscribed with: ${email}`);
+    const subscriber = {
+      email,
+    };
+
+    try {
+      const data = await subscriberService.createContact(subscriber);
+      console.log(data);
+      if (data.data.success) {
+        toast.success(data.data.message);
+        setEmail(""); // Clear input
+      } else {
+        toast.error(data.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong!");
+    }
   };
 
   return (

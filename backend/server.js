@@ -6,6 +6,8 @@ import connectCloudinary from "./config/cloudinary.js";
 import userRoute from "./routes/userRoute.js";
 import productRoute from "./routes/productRoute.js";
 import cartRoute from "./routes/cartRoute.js";
+import contactRoute from "./routes/contactRoute.js";
+import subscriberRoute from "./routes/subscriberRoute.js";
 
 // app config
 const app = express();
@@ -34,6 +36,8 @@ startServer();
 app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
 app.use("/api/cart", cartRoute);
+app.use("/api/contact", contactRoute);
+app.use("/api/subscriber", subscriberRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello world");

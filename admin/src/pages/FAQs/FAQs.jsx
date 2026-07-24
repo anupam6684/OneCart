@@ -1,239 +1,567 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Material UI Icons for Notifications & FAQs management
-import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
+// notification
+import { toast } from "react-toastify";
+
+// Material UI Icons
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
-import ReportProblemOutlinedIcon from "@mui/icons-material/ReportProblemOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import ContactSupportOutlinedIcon from "@mui/icons-material/ContactSupportOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import MailIcon from "@mui/icons-material/Mail";
+
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import AddIcon from "@mui/icons-material/Add";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { contactService } from "../../services/contactService";
+import { subscriberService } from "../../services/subscriberService";
 
-export default function FAQs() {
-  // Top Analytics Row Dataset Mapping Matrix
-  const overviewCards = [
-    {
-      title: "Total Dispatched",
-      value: "48,250",
-      suffix: "push notifications sent",
-      icon: <NotificationsActiveOutlinedIcon sx={{ fontSize: 22 }} />,
-      color: "#3b82f6",
-      bg: "#eff6ff",
-    },
-    {
-      title: "Average Read Rate",
-      value: "76.4%",
-      suffix: "+2.4% higher engagement",
-      icon: <MarkEmailReadOutlinedIcon sx={{ fontSize: 22 }} />,
-      color: "#10b981",
-      bg: "#ecfdf5",
-    },
-    {
-      title: "System Alerts",
-      value: "0 Active",
-      suffix: "all background runners clear",
-      icon: <ReportProblemOutlinedIcon sx={{ fontSize: 22 }} />,
-      color: "#8b5cf6",
-      bg: "#f5f3ff",
-    },
-  ];
+export default function MessagesAndSubscribers() {
+  // Navigation State (Active Tab)
+  const [activeTab, setActiveTab] = useState("contact"); // "contact" | "subscribers"
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Core FAQ Accordion Dataset Array
-  const initialFAQs = [
-    {
-      id: 1,
-      question: "How do automated system order tracking notifications fire?",
-      answer:
-        "Automated tracking updates are directly wired to state machine changes in your database transactions. When an order status updates from 'Pending' to 'Shipped' or 'Delivered', an Express.js background runner immediately flags the transactional action loop and hits the Firebase Cloud Messaging API to alert the client app.",
-      category: "Transactional",
-    },
-    {
-      id: 2,
-      question:
-        "Can store managers schedule transactional promotion push alerts?",
-      answer:
-        "Yes. Using the administrative marketing console layout tool, store managers can compile target demographic subsets, attach coupon code payloads, and set future CRON schedule intervals for batch delivery tracking configurations.",
-      category: "Marketing",
-    },
-    {
-      id: 3,
-      question:
-        "What happens if a customer drops connectivity during an operational push dispatch?",
-      answer:
-        "If a user is offline, the notification payload package is safely cached directly inside our persistent message broker queue. The system retries distribution with backoff tracking flags for up to 72 hours until the client device successfully returns an execution handshake acknowledge state.",
-      category: "Infrastructure",
-    },
-    {
-      id: 4,
-      question:
-        "How can clients alter their global push alerting preference choices?",
-      answer:
-        "Users can manage their visibility toggles from their profile application settings menu frame. These adjustments modify client settings rows inside your schema database grid, completely filtering out specific sub-categories from future backend notification loops.",
-      category: "User Preferences",
-    },
-  ];
+  // ================= 1. DUMMY DATA MATRICES =================
 
-  // State parameters to control expanded accordion frames dynamically
-  const [faqs] = useState(initialFAQs);
-  const [activeFAQ, setActiveFAQ] = useState(1); // Default first item open
+  // Contact Form Data ("SEND US" submissions matching your screenshot fields)
+  const [contactMessages, setContactMessages] = useState([]);
+
+  // Newsletter Subscribers Data (matching your 20% off subscription form)
+  const [subscribers, setSubscribers] = useState([{}]);
+
+  const fetchMessages = async () => {
+    try {
+      const data = await contactService.getAll();
+
+      if (data.data.success) {
+        setContactMessages(data.data.contacts);
+        console.log(data.data.contacts);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchSubscribers = async () => {
+    try {
+      const data = await subscriberService.getAll();
+
+      if (data.data.success) {
+        // setContactMessages(data.data.contacts);
+        setSubscribers(data.data.subscribers);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+    fetchSubscribers();
+  }, []);
+
+  // Accordion open/close state for contact messages
+  const [expandedMessageId, setExpandedMessageId] = useState(1);
+
+  // ================= 2. HANDLER FUNCTIONS =================
+
+  const handleDeleteMessage = async (id) => {
+    try {
+      const data = await contactService.deleteOne(id);
+
+      if (data.data.success) {
+        toast.success(data.data.message);
+        fetchMessages();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete message");
+    }
+  };
+
+  const handleDeleteSubscriber = async (id) => {
+    try {
+      const data = await subscriberService.deleteOne(id);
+
+      if (data.data.success) {
+        toast.success(data.data.message);
+        fetchSubscribers(); // Reload latest data from DB
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete subscriber");
+    }
+  };
+
+  const toggleReadStatus = async (id) => {
+    try {
+      const data = await contactService.updateStatus(id);
+
+      if (data.data.success) {
+        toast.success(data.data.message);
+        fetchMessages();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update status");
+    }
+  };
+
+  // Filter lists based on search bar
+  const filteredMessages = contactMessages.filter(
+    (m) =>
+      m?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m?.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m?.mobile?.includes(searchTerm),
+  );
+
+  const filteredSubscribers = subscribers.filter((subscriber) =>
+    (subscriber.email || "").toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+  // Stats calculation
+  const totalMessages = contactMessages.length;
+  const unreadMessages = contactMessages.filter(
+    (m) => m.status === "Unread",
+  ).length;
+  const totalSubscribers = subscribers.length;
 
   return (
     <div
       className="container-fluid p-0"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      {/* 1. MANAGEMENT METRICS SEGMENT GRID */}
+      {/* ================= TOP ANALYTICS OVERVIEW CARDS ================= */}
       <div className="row g-4 mb-4">
-        {overviewCards.map((card, idx) => (
-          <div className="col-12 col-md-4" key={idx}>
-            <div className="card border-0 p-3 rounded-4 shadow-sm bg-white d-flex flex-row justify-content-between align-items-center">
-              <div>
-                <span
-                  className="text-muted d-block mb-1 fw-medium"
-                  style={{ fontSize: "0.825rem" }}
-                >
-                  {card.title}
-                </span>
-                <h3
-                  className="fw-bold mb-1 text-dark tracking-tight"
-                  style={{ fontSize: "1.6rem" }}
-                >
-                  {card.value}
-                </h3>
-                <span
-                  className="text-muted small"
-                  style={{ fontSize: "0.75rem" }}
-                >
-                  {card.suffix}
-                </span>
-              </div>
-              <div
-                className="rounded-circle d-flex align-items-center justify-content-center"
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  backgroundColor: card.bg,
-                  color: card.color,
-                }}
+        {/* Card 1: Contact Messages */}
+        <div className="col-12 col-md-4">
+          <div className="card border-0 p-3 rounded-4 shadow-sm bg-white d-flex flex-row justify-content-between align-items-center">
+            <div>
+              <span
+                className="text-muted d-block mb-1 fw-medium"
+                style={{ fontSize: "0.825rem" }}
               >
-                {card.icon}
-              </div>
+                Total Messages
+              </span>
+              <h3
+                className="fw-bold mb-1 text-dark"
+                style={{ fontSize: "1.6rem" }}
+              >
+                {totalMessages}
+              </h3>
+              <span
+                className="text-danger small fw-semibold"
+                style={{ fontSize: "0.75rem" }}
+              >
+                {unreadMessages} Unread Response
+                {unreadMessages !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#eff6ff",
+                color: "#3b82f6",
+              }}
+            >
+              <ContactSupportOutlinedIcon sx={{ fontSize: 24 }} />
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Card 2: Newsletter Subscribers */}
+        <div className="col-12 col-md-4">
+          <div className="card border-0 p-3 rounded-4 shadow-sm bg-white d-flex flex-row justify-content-between align-items-center">
+            <div>
+              <span
+                className="text-muted d-block mb-1 fw-medium"
+                style={{ fontSize: "0.825rem" }}
+              >
+                Newsletter Subscribers
+              </span>
+              <h3
+                className="fw-bold mb-1 text-dark"
+                style={{ fontSize: "1.6rem" }}
+              >
+                {totalSubscribers}
+              </h3>
+              <span
+                className="text-success small fw-semibold"
+                style={{ fontSize: "0.75rem" }}
+              >
+                Active coupon claims (20% OFF)
+              </span>
+            </div>
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#ecfdf5",
+                color: "#10b981",
+              }}
+            >
+              <MarkEmailReadOutlinedIcon sx={{ fontSize: 24 }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Quick Status */}
+        <div className="col-12 col-md-4">
+          <div className="card border-0 p-3 rounded-4 shadow-sm bg-white d-flex flex-row justify-content-between align-items-center">
+            <div>
+              <span
+                className="text-muted d-block mb-1 fw-medium"
+                style={{ fontSize: "0.825rem" }}
+              >
+                Support Health
+              </span>
+              <h3
+                className="fw-bold mb-1 text-dark"
+                style={{ fontSize: "1.6rem" }}
+              >
+                100%
+              </h3>
+              <span
+                className="text-muted small"
+                style={{ fontSize: "0.75rem" }}
+              >
+                All forms active & receiving data
+              </span>
+            </div>
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#f5f3ff",
+                color: "#8b5cf6",
+              }}
+            >
+              <CheckCircleIcon sx={{ fontSize: 24 }} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 2. CORE WORKSPACE CONTROLS CARD BOARD */}
+      {/* ================= MAIN CONTENT WORKSPACE ================= */}
       <div className="card border-0 rounded-4 shadow-sm bg-white p-4">
-        {/* Dynamic Filters Configuration Header Toolbar */}
-        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+        {/* TAB SWITCHER & HEADER */}
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 border-bottom pb-3">
           <div>
             <h4
               className="fw-bold text-dark mb-1"
               style={{ letterSpacing: "-0.02em" }}
             >
-              Notification System FAQs
+              Customer Interactions
             </h4>
             <span className="text-muted small" style={{ fontSize: "0.825rem" }}>
-              Review internal engineering operational procedures for push
-              notifications
+              Manage incoming contact queries and newsletter leads
             </span>
           </div>
 
-          <button
-            className="btn btn-primary d-flex align-items-center gap-2 px-3 rounded-3 fw-medium shadow-none text-nowrap"
-            style={{ height: "40px", fontSize: "0.875rem" }}
-          >
-            <AddIcon sx={{ fontSize: 18 }} />
-            <span>Create FAQ Entry</span>
-          </button>
+          {/* Navigation Tab Pills */}
+          <div className="d-flex bg-light p-1 rounded-3 border">
+            <button
+              className={`btn btn-sm rounded-2 fw-medium px-3 transition-all ${
+                activeTab === "contact"
+                  ? "btn-white bg-white text-dark shadow-sm"
+                  : "text-secondary border-0"
+              }`}
+              style={{ fontSize: "0.85rem" }}
+              onClick={() => setActiveTab("contact")}
+            >
+              📩 Contact Messages ({totalMessages})
+            </button>
+            <button
+              className={`btn btn-sm rounded-2 fw-medium px-3 transition-all ${
+                activeTab === "subscribers"
+                  ? "btn-white bg-white text-dark shadow-sm"
+                  : "text-secondary border-0"
+              }`}
+              style={{ fontSize: "0.85rem" }}
+              onClick={() => setActiveTab("subscribers")}
+            >
+              📧 Subscribers ({totalSubscribers})
+            </button>
+          </div>
         </div>
 
-        {/* Search Filter Bar Row Component */}
+        {/* SEARCH BAR ROW */}
         <div
           className="input-group border rounded-3 px-2 bg-light align-items-center mb-4"
-          style={{ height: "44px", maxWidth: "450px" }}
+          style={{ height: "42px", maxWidth: "420px" }}
         >
           <SearchIcon className="text-muted me-2" sx={{ fontSize: 18 }} />
           <input
             type="text"
             className="form-control border-0 p-0 bg-transparent shadow-none"
-            placeholder="Search queries, backend parameters, keywords..."
+            placeholder={
+              activeTab === "contact"
+                ? "Search by name, email, subject, mobile..."
+                : "Search subscribers by email..."
+            }
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{ fontSize: "0.875rem" }}
           />
         </div>
 
-        {/* 3. HARDWIRED INTERACTIVE ACCORDION TREE MATRIX */}
-        <div className="d-flex flex-column gap-3">
-          {faqs.map((faq) => {
-            const isExpanded = activeFAQ === faq.id;
-            return (
-              <div
-                key={faq.id}
-                className="border rounded-4 transition-all"
-                style={{
-                  borderColor: isExpanded ? "#0d6efd" : "#e2e8f0",
-                  backgroundColor: isExpanded ? "#f8fafc" : "#ffffff",
-                  transition: "all 0.2s ease-in-out",
-                }}
-              >
-                {/* Accordion Toggle Trigger Header Frame */}
-                <div
-                  className="p-3 d-flex justify-content-between align-items-center cursor-pointer"
-                  onClick={() => setActiveFAQ(isExpanded ? null : faq.id)}
-                  style={{ cursor: "pointer", userSelect: "none" }}
-                >
-                  <div className="d-flex align-items-center gap-3">
-                    <HelpOutlineOutlinedIcon
-                      style={{ color: isExpanded ? "#0d6efd" : "#64748b" }}
-                      sx={{ fontSize: 20 }}
-                    />
-                    <h6
-                      className={`mb-0 fw-semibold ${isExpanded ? "text-primary" : "text-dark"}`}
-                      style={{ fontSize: "0.925rem" }}
-                    >
-                      {faq.question}
-                    </h6>
-                  </div>
-
-                  <div className="d-flex align-items-center gap-2">
-                    <span
-                      className="badge bg-light text-secondary border px-2 py-1 rounded-2"
-                      style={{ fontSize: "0.725rem", fontWeight: "500" }}
-                    >
-                      {faq.category}
-                    </span>
-                    <KeyboardArrowDownIcon
-                      style={{
-                        transform: isExpanded
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                        transition: "transform 0.2s ease",
-                        color: isExpanded ? "#0d6efd" : "#64748b",
-                      }}
-                      sx={{ fontSize: 18 }}
-                    />
-                  </div>
-                </div>
-
-                {/* Collapsible Content Body Segment Panel */}
-                {isExpanded && (
-                  <div
-                    className="px-3 pb-3 pt-1 border-top"
-                    style={{ borderColor: "rgba(0, 0, 0, 0.03)" }}
-                  >
-                    <p
-                      className="mb-0 text-secondary"
-                      style={{ fontSize: "0.875rem", lineHeight: "1.6" }}
-                    >
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
+        {/* ================= TAB 1: CONTACT FORM ("SEND US") MESSAGES ================= */}
+        {activeTab === "contact" && (
+          <div className="d-flex flex-column gap-3">
+            {filteredMessages.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                <ContactSupportOutlinedIcon
+                  sx={{ fontSize: 40 }}
+                  className="mb-2 opacity-50"
+                />
+                <p className="mb-0">No contact messages found.</p>
               </div>
-            );
-          })}
-        </div>
+            ) : (
+              filteredMessages.map((msg) => {
+                const isExpanded = expandedMessageId === msg._id;
+                const isUnread = msg.status === "Unread";
+
+                return (
+                  <div
+                    key={msg._id}
+                    className="border rounded-4 transition-all"
+                    style={{
+                      borderColor: isExpanded ? "#0d6efd" : "#e2e8f0",
+                      backgroundColor: isUnread ? "#f8fafc" : "#ffffff",
+                    }}
+                  >
+                    {/* Message Accordion Header */}
+                    <div
+                      className="p-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 cursor-pointer"
+                      onClick={() =>
+                        setExpandedMessageId(isExpanded ? null : msg._id)
+                      }
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                    >
+                      {/* Left Meta Info */}
+                      <div className="d-flex align-items-center gap-3">
+                        <div
+                          className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                          style={{
+                            width: "38px",
+                            height: "38px",
+                            backgroundColor: isUnread ? "#212529" : "#6c757d",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {msg.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="d-flex align-items-center gap-2">
+                            <h6
+                              className={`mb-0 fw-bold ${isUnread ? "text-dark" : "text-secondary"}`}
+                              style={{ fontSize: "0.925rem" }}
+                            >
+                              {msg.name}
+                            </h6>
+                            {isUnread && (
+                              <span
+                                className="badge bg-danger rounded-pill px-2 py-1"
+                                style={{ fontSize: "0.65rem" }}
+                              >
+                                NEW
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            className="text-muted extra-small d-block mt-0.5"
+                            style={{ fontSize: "0.8rem" }}
+                          >
+                            Subject:{" "}
+                            <strong className="text-dark">{msg.subject}</strong>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Right Date and Actions */}
+                      <div className="d-flex align-items-center gap-3 ms-auto ms-md-0">
+                        <span
+                          className="text-muted small font-monospace"
+                          style={{ fontSize: "0.775rem" }}
+                        >
+                          {}
+                        </span>
+
+                        <KeyboardArrowDownIcon
+                          style={{
+                            transform: isExpanded
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                            transition: "transform 0.2s ease",
+                            color: isExpanded ? "#0d6efd" : "#64748b",
+                          }}
+                          sx={{ fontSize: 20 }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Message Body Details */}
+                    {isExpanded && (
+                      <div
+                        className="px-3 pb-3 pt-2 border-top bg-white rounded-bottom-4"
+                        style={{ borderColor: "#f1f5f9" }}
+                      >
+                        {/* Customer Contact Badges */}
+                        <div className="d-flex flex-wrap gap-3 mb-3 p-2 bg-light rounded-3 text-muted small">
+                          <span className="d-flex align-items-center gap-1">
+                            <MailIcon
+                              sx={{ fontSize: 16 }}
+                              className="text-primary"
+                            />
+                            <strong>Email:</strong> {msg.email}
+                          </span>
+
+                          <span className="d-flex align-items-center gap-1">
+                            <PhoneIphoneIcon
+                              sx={{ fontSize: 16 }}
+                              className="text-success"
+                            />
+                            <strong>Mobile:</strong> {msg.mobile}
+                          </span>
+
+                          <span className="d-flex align-items-center gap-1">
+                            🕒 <strong>Created:</strong>{" "}
+                            {new Date(msg.createdAt).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+
+                          <span className="d-flex align-items-center gap-1">
+                            ✏️ <strong>Last Updated:</strong>{" "}
+                            {new Date(msg.updatedAt).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+
+                        {/* Message Content Text */}
+                        <div className="mb-3">
+                          <label
+                            className="form-label text-muted extra-small fw-semibold text-uppercase mb-1"
+                            style={{ fontSize: "0.7rem" }}
+                          >
+                            Message Body
+                          </label>
+                          <p
+                            className="p-3 bg-light rounded-3 text-dark mb-0 lh-base"
+                            style={{ fontSize: "0.875rem" }}
+                          >
+                            "{msg.message}"
+                          </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="d-flex justify-content-between align-items-center pt-2">
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm rounded-2 d-flex align-items-center gap-1"
+                            onClick={() => toggleReadStatus(msg._id)}
+                            style={{ fontSize: "0.775rem" }}
+                          >
+                            Mark as{" "}
+                            {msg.status === "Unread" ? "Read" : "Unread"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm rounded-2 d-flex align-items-center gap-1"
+                            onClick={() => handleDeleteMessage(msg._id)}
+                            style={{ fontSize: "0.775rem" }}
+                          >
+                            <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+                            Delete Query
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {/* ================= TAB 2: NEWSLETTER SUBSCRIBERS TABLE ================= */}
+        {activeTab === "subscribers" && (
+          <div className="table-responsive rounded-3 border">
+            <table className="table table-hover align-middle mb-0">
+              <thead
+                className="bg-light text-muted"
+                style={{ fontSize: "0.8rem", textTransform: "uppercase" }}
+              >
+                <tr>
+                  <th className="py-3 ps-3">#</th>
+                  <th className="py-3">Subscriber Email</th>
+                  <th className="py-3">Subscription Date</th>
+                  <th className="py-3">Discount Code</th>
+                  <th className="py-3 text-end pe-3">Action</th>
+                </tr>
+              </thead>
+              <tbody style={{ fontSize: "0.875rem" }}>
+                {filteredSubscribers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-4 text-muted">
+                      No subscribers found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredSubscribers.map((sub, index) => (
+                    <tr key={sub._id}>
+                      <td className="ps-3 fw-medium text-muted">{index + 1}</td>
+                      <td>
+                        <span className="fw-semibold text-dark d-flex align-items-center gap-2">
+                          <MailIcon
+                            sx={{ fontSize: 18 }}
+                            className="text-primary"
+                          />
+                          {sub.email}
+                        </span>
+                      </td>
+                      <td className="text-muted">
+                        {new Date(sub.createdAt).toLocaleString("en-IN")}
+                      </td>
+                      <td>
+                        <span
+                          className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-medium"
+                          style={{ fontSize: "0.75rem" }}
+                        >
+                          🎁 {sub.discountClaimed}
+                        </span>
+                      </td>
+                      <td className="text-end pe-3">
+                        <button
+                          type="button"
+                          className="btn btn-link text-danger p-0 border-0 shadow-none"
+                          onClick={() => handleDeleteSubscriber(sub._id)}
+                          title="Remove subscriber"
+                        >
+                          <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

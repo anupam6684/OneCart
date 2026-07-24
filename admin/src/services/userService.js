@@ -1,11 +1,12 @@
 import axios from "axios";
+import api from "./api.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const userService = {
   getAll: async () => {
-    const response = await fetch(`${API_BASE_URL}/users`);
-    return response.json();
+    const response = await api.get(`/api/user/alluser`);
+    return response.data;
   },
 
   getById: async (id) => {
