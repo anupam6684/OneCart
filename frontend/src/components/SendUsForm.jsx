@@ -3,12 +3,11 @@ import * as Yup from "yup";
 import Title from "./Title";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { contactService } from "../services/contactService";
 
 export default function SendUsForm() {
-  const [sendUsData, setSendUsData] = useState({});
-
   const validationSchema = Yup.object({
-    username: Yup.string()
+    name: Yup.string()
       .min(3, "Minimum 3 characters required")
       .required("Name is required"),
 
@@ -42,18 +41,37 @@ export default function SendUsForm() {
 
       <Formik
         initialValues={{
-          username: "",
+          name: "",
           email: "",
           subject: "",
           message: "",
           number: "",
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => {
-          setSendUsData(values);
-          toast.success("Message sent successfully 🚀");
-          console.log(sendUsData);
-          resetForm();
+        onSubmit={async (values, { resetForm }) => {
+          try {
+            const contactData = {
+              name: values.name,
+              email: values.email,
+              mobile: values.number,
+              subject: values.subject,
+              message: values.message,
+            };
+            const data = await contactService.createContact(contactData);
+
+            if (data.success) {
+              toast.success(data.message);
+              resetForm();
+            } else {
+              toast.error(data.message);
+            }
+          } catch (error) {
+            console.error(error);
+
+            toast.error(
+              error.response?.data?.message || "Something went wrong",
+            );
+          }
         }}
       >
         {({ isSubmitting }) => (
@@ -62,12 +80,12 @@ export default function SendUsForm() {
               <div className="col mx-3 p-3">
                 <label>Your Name *</label>
                 <Field
-                  name="username"
+                  name="name"
                   className="form-control"
                   placeholder="Enter your name"
                 />
                 <ErrorMessage
-                  name="username"
+                  name="name"
                   component="div"
                   className="text-danger"
                 />

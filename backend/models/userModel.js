@@ -36,6 +36,20 @@ const userSchema = new mongoose.Schema(
       type: Array,
       default: [{}],
     },
+    status: {
+      type: String,
+      enum: ["ACTIVE", "PENDING", "SUSPENDED", "BLOCKED"],
+      default: "ACTIVE",
+    },
+
+    phone: {
+      type: String,
+      default: "",
+    },
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
 
     image: {
       type: String,

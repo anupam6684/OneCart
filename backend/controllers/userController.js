@@ -19,15 +19,25 @@ const loginUser = async (req, res) => {
     }
     // password check
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.json({
         success: false,
         message: "Invalid username or password",
       });
     }
+
+    // Update last login
+    await userModel.findByIdAndUpdate(user._id, {
+      lastLogin: new Date(),
+    });
     // create jwt token
     const token = await CreateToken(user._id);
-    return res.json({ success: true, token });
+
+    return res.json({
+      success: true,
+      token,
+    });
   } catch (error) {
     console.log(error);
     return res.json({ success: false, message: error.message });
@@ -113,4 +123,21 @@ const profile = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, profile };
+const getAllUser = async (req, res) => {
+  try {
+    const users = await userModel.find({}, "-password").sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export { loginUser, registerUser, adminLogin, profile, getAllUser };

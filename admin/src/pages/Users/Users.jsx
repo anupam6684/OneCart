@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import { userService } from "../../services/userService";
 
 // Material UI Icons for Users Management Panel
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
@@ -12,116 +14,86 @@ import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutlined";
 
 export default function Users() {
+  const [users, setUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const data = await userService.getAll();
+
+      console.log(data);
+      if (data.success) {
+        setUsers(data.users);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Helper styling profiles to control status pills dynamically
+  const getStatusBadgeStyle = (status) => {
+    switch (status) {
+      case "ACTIVE":
+        return { bg: "#ecfdf5", color: "#10b981" };
+
+      case "PENDING":
+        return { bg: "#fffbeb", color: "#f59e0b" };
+
+      case "SUSPENDED":
+        return { bg: "#fef2f2", color: "#ef4444" };
+
+      default:
+        return { bg: "#f8fafc", color: "#64748b" };
+    }
+  };
+
+  const totalUsers = users.length;
+
+  const activeUsers = users.filter((user) => user.status === "ACTIVE").length;
+
+  const pendingUsers = users.filter((user) => user.status === "PENDING").length;
+
+  const suspendedUsers = users.filter(
+    (user) => user.status === "SUSPENDED",
+  ).length;
   // Analytical Grid Segment Mapping Matrix
   const overviewCards = [
     {
       title: "Total Users",
-      value: "1,342",
+      value: totalUsers,
       suffix: "registered accounts",
       icon: <GroupOutlinedIcon sx={{ fontSize: 22 }} />,
       color: "#3b82f6",
       bg: "#eff6ff",
     },
     {
-      title: "Active Now",
-      value: "842",
-      suffix: "online within 24h",
+      title: "Active Users",
+      value: activeUsers,
+      suffix: "active accounts",
       icon: <VerifiedUserOutlinedIcon sx={{ fontSize: 22 }} />,
       color: "#10b981",
       bg: "#ecfdf5",
     },
     {
-      title: "Pending Verify",
-      value: "18",
-      suffix: "awaiting validation",
+      title: "Pending Users",
+      value: pendingUsers,
+      suffix: "awaiting verification",
       icon: <MarkEmailUnreadOutlinedIcon sx={{ fontSize: 22 }} />,
       color: "#f59e0b",
       bg: "#fffbeb",
     },
     {
-      title: "Banned Profiles",
-      value: "7",
-      suffix: "access flags restricted",
+      title: "Suspended Users",
+      value: suspendedUsers,
+      suffix: "restricted accounts",
       icon: <GppBadOutlinedIcon sx={{ fontSize: 22 }} />,
       color: "#ef4444",
       bg: "#fef2f2",
     },
   ];
-
-  // Core Mock Customers Listing Array
-  const initialUsers = [
-    {
-      id: "USR-0042",
-      name: "Anupam Jana",
-      email: "anupam@example.com",
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80",
-      role: "Customer",
-      joined: "Apr 12, 2026",
-      purchaseCount: 14,
-      status: "Active",
-    },
-    {
-      id: "USR-0041",
-      name: "Vikram Malhotra",
-      email: "vikram@example.com",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
-      role: "Manager",
-      joined: "Mar 20, 2026",
-      purchaseCount: 0,
-      status: "Active",
-    },
-    {
-      id: "USR-0040",
-      name: "Aditi Rao",
-      email: "aditi@example.com",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
-      role: "Customer",
-      joined: "Jan 05, 2026",
-      purchaseCount: 32,
-      status: "Active",
-    },
-    {
-      id: "USR-0039",
-      name: "Rohan Das",
-      email: "rohan.das@example.com",
-      avatar:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80",
-      role: "Customer",
-      joined: "Dec 18, 2025",
-      purchaseCount: 2,
-      status: "Pending",
-    },
-    {
-      id: "USR-0038",
-      name: "Karan Singh",
-      email: "karan@example.com",
-      avatar:
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&q=80",
-      role: "Customer",
-      joined: "Nov 02, 2025",
-      purchaseCount: 8,
-      status: "Suspended",
-    },
-  ];
-
-  const [users] = useState(initialUsers);
-
-  // Helper styling profiles to control status pills dynamically
-  const getStatusBadgeStyle = (status) => {
-    switch (status) {
-      case "Active":
-        return { bg: "#ecfdf5", color: "#10b981" };
-      case "Pending":
-        return { bg: "#fffbeb", color: "#f59e0b" };
-      case "Suspended":
-        return { bg: "#fef2f2", color: "#ef4444" };
-      default:
-        return { bg: "#f8fafc", color: "#64748b" };
-    }
-  };
 
   return (
     <div
@@ -238,8 +210,11 @@ export default function Users() {
               >
                 <th className="border-bottom pb-3">User Instance</th>
                 <th className="border-bottom pb-3">Account ID</th>
+                <th className="border-bottom pb-3">Phone Number</th>
+
                 <th className="border-bottom pb-3">Role Status</th>
                 <th className="border-bottom pb-3">Join Date</th>
+                <th className="border-bottom pb-3">Last Login</th>
                 <th className="border-bottom pb-3">Total Orders</th>
                 <th className="border-bottom pb-3">Security Pill</th>
                 <th
@@ -254,13 +229,13 @@ export default function Users() {
               {users.map((user) => {
                 const badgeStyles = getStatusBadgeStyle(user.status);
                 return (
-                  <tr key={user.id}>
+                  <tr key={user._id}>
                     {/* User Profile Info Identity Segment */}
                     <td className="py-3">
                       <div className="d-flex align-items-center gap-3">
                         <img
-                          src={user.avatar}
-                          alt={user.name}
+                          src={user.image}
+                          alt={user.username}
                           className="rounded-circle object-fit-cover shadow-sm border"
                           style={{ width: "40px", height: "40px" }}
                         />
@@ -269,7 +244,7 @@ export default function Users() {
                             className="mb-0 fw-semibold text-dark"
                             style={{ fontSize: "0.875rem" }}
                           >
-                            {user.name}
+                            {user.username}
                           </h6>
                           <span
                             className="text-muted"
@@ -282,7 +257,11 @@ export default function Users() {
                     </td>
 
                     {/* Account ID */}
-                    <td className="text-muted font-monospace">{user.id}</td>
+                    <td className="text-muted font-monospace">{user._id}</td>
+                    {/* Phone number */}
+                    <td className="text-muted font-monospace">
+                      {user.phone || 91000000}
+                    </td>
 
                     {/* Role Level Label */}
                     <td>
@@ -300,12 +279,30 @@ export default function Users() {
                       </span>
                     </td>
 
-                    {/* Registration Date Timestamp */}
-                    <td className="text-muted">{user.joined}</td>
+                    <td className="text-muted">
+                      {new Date(user.createdAt).toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </td>
 
-                    {/* Historical Order Activity Track Metric */}
+                    <td className="text-muted">
+                      {user.lastLogin
+                        ? new Date(user.lastLogin).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "Never"}
+                    </td>
+
                     <td className="fw-semibold text-dark px-4">
-                      {user.purchaseCount}
+                      {user.orders.length}
                     </td>
 
                     {/* Account Status Flag Pill */}
