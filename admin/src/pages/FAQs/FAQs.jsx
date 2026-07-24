@@ -20,6 +20,8 @@ export default function MessagesAndSubscribers() {
   // Navigation State (Active Tab)
   const [activeTab, setActiveTab] = useState("contact"); // "contact" | "subscribers"
   const [searchTerm, setSearchTerm] = useState("");
+  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [loadingSubscribers, setLoadingSubscribers] = useState(true);
 
   // ================= 1. DUMMY DATA MATRICES =================
 
@@ -31,6 +33,7 @@ export default function MessagesAndSubscribers() {
 
   const fetchMessages = async () => {
     try {
+      setLoadingMessages(true);
       const data = await contactService.getAll();
 
       if (data.data.success) {
@@ -39,11 +42,14 @@ export default function MessagesAndSubscribers() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingMessages(false);
     }
   };
 
   const fetchSubscribers = async () => {
     try {
+      setLoadingSubscribers(true);
       const data = await subscriberService.getAll();
 
       if (data.data.success) {
@@ -52,6 +58,8 @@ export default function MessagesAndSubscribers() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingSubscribers(false);
     }
   };
 
@@ -310,258 +318,281 @@ export default function MessagesAndSubscribers() {
         </div>
 
         {/* ================= TAB 1: CONTACT FORM ("SEND US") MESSAGES ================= */}
-        {activeTab === "contact" && (
-          <div className="d-flex flex-column gap-3">
-            {filteredMessages.length === 0 ? (
-              <div className="text-center py-5 text-muted">
-                <ContactSupportOutlinedIcon
-                  sx={{ fontSize: 40 }}
-                  className="mb-2 opacity-50"
-                />
-                <p className="mb-0">No contact messages found.</p>
+        {activeTab === "contact" &&
+          (loadingMessages ? (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ minHeight: "300px" }}
+            >
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
               </div>
-            ) : (
-              filteredMessages.map((msg) => {
-                const isExpanded = expandedMessageId === msg._id;
-                const isUnread = msg.status === "Unread";
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {filteredMessages.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                  <ContactSupportOutlinedIcon
+                    sx={{ fontSize: 40 }}
+                    className="mb-2 opacity-50"
+                  />
+                  <p className="mb-0">No contact messages found.</p>
+                </div>
+              ) : (
+                filteredMessages.map((msg) => {
+                  const isExpanded = expandedMessageId === msg._id;
+                  const isUnread = msg.status === "Unread";
 
-                return (
-                  <div
-                    key={msg._id}
-                    className="border rounded-4 transition-all"
-                    style={{
-                      borderColor: isExpanded ? "#0d6efd" : "#e2e8f0",
-                      backgroundColor: isUnread ? "#f8fafc" : "#ffffff",
-                    }}
-                  >
-                    {/* Message Accordion Header */}
+                  return (
                     <div
-                      className="p-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 cursor-pointer"
-                      onClick={() =>
-                        setExpandedMessageId(isExpanded ? null : msg._id)
-                      }
-                      style={{ cursor: "pointer", userSelect: "none" }}
+                      key={msg._id}
+                      className="border rounded-4 transition-all"
+                      style={{
+                        borderColor: isExpanded ? "#0d6efd" : "#e2e8f0",
+                        backgroundColor: isUnread ? "#f8fafc" : "#ffffff",
+                      }}
                     >
-                      {/* Left Meta Info */}
-                      <div className="d-flex align-items-center gap-3">
-                        <div
-                          className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                          style={{
-                            width: "38px",
-                            height: "38px",
-                            backgroundColor: isUnread ? "#212529" : "#6c757d",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {msg.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="d-flex align-items-center gap-2">
-                            <h6
-                              className={`mb-0 fw-bold ${isUnread ? "text-dark" : "text-secondary"}`}
-                              style={{ fontSize: "0.925rem" }}
-                            >
-                              {msg.name}
-                            </h6>
-                            {isUnread && (
-                              <span
-                                className="badge bg-danger rounded-pill px-2 py-1"
-                                style={{ fontSize: "0.65rem" }}
-                              >
-                                NEW
-                              </span>
-                            )}
-                          </div>
-                          <span
-                            className="text-muted extra-small d-block mt-0.5"
-                            style={{ fontSize: "0.8rem" }}
-                          >
-                            Subject:{" "}
-                            <strong className="text-dark">{msg.subject}</strong>
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Right Date and Actions */}
-                      <div className="d-flex align-items-center gap-3 ms-auto ms-md-0">
-                        <span
-                          className="text-muted small font-monospace"
-                          style={{ fontSize: "0.775rem" }}
-                        >
-                          {}
-                        </span>
-
-                        <KeyboardArrowDownIcon
-                          style={{
-                            transform: isExpanded
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                            transition: "transform 0.2s ease",
-                            color: isExpanded ? "#0d6efd" : "#64748b",
-                          }}
-                          sx={{ fontSize: 20 }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Message Body Details */}
-                    {isExpanded && (
+                      {/* Message Accordion Header */}
                       <div
-                        className="px-3 pb-3 pt-2 border-top bg-white rounded-bottom-4"
-                        style={{ borderColor: "#f1f5f9" }}
+                        className="p-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 cursor-pointer"
+                        onClick={() =>
+                          setExpandedMessageId(isExpanded ? null : msg._id)
+                        }
+                        style={{ cursor: "pointer", userSelect: "none" }}
                       >
-                        {/* Customer Contact Badges */}
-                        <div className="d-flex flex-wrap gap-3 mb-3 p-2 bg-light rounded-3 text-muted small">
-                          <span className="d-flex align-items-center gap-1">
-                            <MailIcon
-                              sx={{ fontSize: 16 }}
-                              className="text-primary"
-                            />
-                            <strong>Email:</strong> {msg.email}
-                          </span>
-
-                          <span className="d-flex align-items-center gap-1">
-                            <PhoneIphoneIcon
-                              sx={{ fontSize: 16 }}
-                              className="text-success"
-                            />
-                            <strong>Mobile:</strong> {msg.mobile}
-                          </span>
-
-                          <span className="d-flex align-items-center gap-1">
-                            🕒 <strong>Created:</strong>{" "}
-                            {new Date(msg.createdAt).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-
-                          <span className="d-flex align-items-center gap-1">
-                            ✏️ <strong>Last Updated:</strong>{" "}
-                            {new Date(msg.updatedAt).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+                        {/* Left Meta Info */}
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                            style={{
+                              width: "38px",
+                              height: "38px",
+                              backgroundColor: isUnread ? "#212529" : "#6c757d",
+                              fontSize: "0.85rem",
+                            }}
+                          >
+                            {msg.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="d-flex align-items-center gap-2">
+                              <h6
+                                className={`mb-0 fw-bold ${isUnread ? "text-dark" : "text-secondary"}`}
+                                style={{ fontSize: "0.925rem" }}
+                              >
+                                {msg.name}
+                              </h6>
+                              {isUnread && (
+                                <span
+                                  className="badge bg-danger rounded-pill px-2 py-1"
+                                  style={{ fontSize: "0.65rem" }}
+                                >
+                                  NEW
+                                </span>
+                              )}
+                            </div>
+                            <span
+                              className="text-muted extra-small d-block mt-0.5"
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              Subject:{" "}
+                              <strong className="text-dark">
+                                {msg.subject}
+                              </strong>
+                            </span>
+                          </div>
                         </div>
 
-                        {/* Message Content Text */}
-                        <div className="mb-3">
-                          <label
-                            className="form-label text-muted extra-small fw-semibold text-uppercase mb-1"
-                            style={{ fontSize: "0.7rem" }}
-                          >
-                            Message Body
-                          </label>
-                          <p
-                            className="p-3 bg-light rounded-3 text-dark mb-0 lh-base"
-                            style={{ fontSize: "0.875rem" }}
-                          >
-                            "{msg.message}"
-                          </p>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="d-flex justify-content-between align-items-center pt-2">
-                          <button
-                            type="button"
-                            className="btn btn-outline-secondary btn-sm rounded-2 d-flex align-items-center gap-1"
-                            onClick={() => toggleReadStatus(msg._id)}
+                        {/* Right Date and Actions */}
+                        <div className="d-flex align-items-center gap-3 ms-auto ms-md-0">
+                          <span
+                            className="text-muted small font-monospace"
                             style={{ fontSize: "0.775rem" }}
                           >
-                            Mark as{" "}
-                            {msg.status === "Unread" ? "Read" : "Unread"}
-                          </button>
+                            {}
+                          </span>
 
-                          <button
-                            type="button"
-                            className="btn btn-outline-danger btn-sm rounded-2 d-flex align-items-center gap-1"
-                            onClick={() => handleDeleteMessage(msg._id)}
-                            style={{ fontSize: "0.775rem" }}
-                          >
-                            <DeleteOutlineIcon sx={{ fontSize: 16 }} />
-                            Delete Query
-                          </button>
+                          <KeyboardArrowDownIcon
+                            style={{
+                              transform: isExpanded
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                              transition: "transform 0.2s ease",
+                              color: isExpanded ? "#0d6efd" : "#64748b",
+                            }}
+                            sx={{ fontSize: 20 }}
+                          />
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
 
+                      {/* Message Body Details */}
+                      {isExpanded && (
+                        <div
+                          className="px-3 pb-3 pt-2 border-top bg-white rounded-bottom-4"
+                          style={{ borderColor: "#f1f5f9" }}
+                        >
+                          {/* Customer Contact Badges */}
+                          <div className="d-flex flex-wrap gap-3 mb-3 p-2 bg-light rounded-3 text-muted small">
+                            <span className="d-flex align-items-center gap-1">
+                              <MailIcon
+                                sx={{ fontSize: 16 }}
+                                className="text-primary"
+                              />
+                              <strong>Email:</strong> {msg.email}
+                            </span>
+
+                            <span className="d-flex align-items-center gap-1">
+                              <PhoneIphoneIcon
+                                sx={{ fontSize: 16 }}
+                                className="text-success"
+                              />
+                              <strong>Mobile:</strong> {msg.mobile}
+                            </span>
+
+                            <span className="d-flex align-items-center gap-1">
+                              🕒 <strong>Created:</strong>{" "}
+                              {new Date(msg.createdAt).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+
+                            <span className="d-flex align-items-center gap-1">
+                              ✏️ <strong>Last Updated:</strong>{" "}
+                              {new Date(msg.updatedAt).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+
+                          {/* Message Content Text */}
+                          <div className="mb-3">
+                            <label
+                              className="form-label text-muted extra-small fw-semibold text-uppercase mb-1"
+                              style={{ fontSize: "0.7rem" }}
+                            >
+                              Message Body
+                            </label>
+                            <p
+                              className="p-3 bg-light rounded-3 text-dark mb-0 lh-base"
+                              style={{ fontSize: "0.875rem" }}
+                            >
+                              "{msg.message}"
+                            </p>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="d-flex justify-content-between align-items-center pt-2">
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary btn-sm rounded-2 d-flex align-items-center gap-1"
+                              onClick={() => toggleReadStatus(msg._id)}
+                              style={{ fontSize: "0.775rem" }}
+                            >
+                              Mark as{" "}
+                              {msg.status === "Unread" ? "Read" : "Unread"}
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm rounded-2 d-flex align-items-center gap-1"
+                              onClick={() => handleDeleteMessage(msg._id)}
+                              style={{ fontSize: "0.775rem" }}
+                            >
+                              <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+                              Delete Query
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ))}
         {/* ================= TAB 2: NEWSLETTER SUBSCRIBERS TABLE ================= */}
-        {activeTab === "subscribers" && (
-          <div className="table-responsive rounded-3 border">
-            <table className="table table-hover align-middle mb-0">
-              <thead
-                className="bg-light text-muted"
-                style={{ fontSize: "0.8rem", textTransform: "uppercase" }}
-              >
-                <tr>
-                  <th className="py-3 ps-3">#</th>
-                  <th className="py-3">Subscriber Email</th>
-                  <th className="py-3">Subscription Date</th>
-                  <th className="py-3">Discount Code</th>
-                  <th className="py-3 text-end pe-3">Action</th>
-                </tr>
-              </thead>
-              <tbody style={{ fontSize: "0.875rem" }}>
-                {filteredSubscribers.length === 0 ? (
+        {activeTab === "subscribers" &&
+          (loadingSubscribers ? (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ minHeight: "300px" }}
+            >
+              <div className="spinner-border text-success" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="table-responsive rounded-3 border">
+              <table className="table table-hover align-middle mb-0">
+                <thead
+                  className="bg-light text-muted"
+                  style={{ fontSize: "0.8rem", textTransform: "uppercase" }}
+                >
                   <tr>
-                    <td colSpan="5" className="text-center py-4 text-muted">
-                      No subscribers found.
-                    </td>
+                    <th className="py-3 ps-3">#</th>
+                    <th className="py-3">Subscriber Email</th>
+                    <th className="py-3">Subscription Date</th>
+                    <th className="py-3">Discount Code</th>
+                    <th className="py-3 text-end pe-3">Action</th>
                   </tr>
-                ) : (
-                  filteredSubscribers.map((sub, index) => (
-                    <tr key={sub._id}>
-                      <td className="ps-3 fw-medium text-muted">{index + 1}</td>
-                      <td>
-                        <span className="fw-semibold text-dark d-flex align-items-center gap-2">
-                          <MailIcon
-                            sx={{ fontSize: 18 }}
-                            className="text-primary"
-                          />
-                          {sub.email}
-                        </span>
-                      </td>
-                      <td className="text-muted">
-                        {new Date(sub.createdAt).toLocaleString("en-IN")}
-                      </td>
-                      <td>
-                        <span
-                          className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-medium"
-                          style={{ fontSize: "0.75rem" }}
-                        >
-                          🎁 {sub.discountClaimed}
-                        </span>
-                      </td>
-                      <td className="text-end pe-3">
-                        <button
-                          type="button"
-                          className="btn btn-link text-danger p-0 border-0 shadow-none"
-                          onClick={() => handleDeleteSubscriber(sub._id)}
-                          title="Remove subscriber"
-                        >
-                          <DeleteOutlineIcon sx={{ fontSize: 18 }} />
-                        </button>
+                </thead>
+                <tbody style={{ fontSize: "0.875rem" }}>
+                  {filteredSubscribers.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="text-center py-4 text-muted">
+                        No subscribers found.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  ) : (
+                    filteredSubscribers.map((sub, index) => (
+                      <tr key={sub._id}>
+                        <td className="ps-3 fw-medium text-muted">
+                          {index + 1}
+                        </td>
+                        <td>
+                          <span className="fw-semibold text-dark d-flex align-items-center gap-2">
+                            <MailIcon
+                              sx={{ fontSize: 18 }}
+                              className="text-primary"
+                            />
+                            {sub.email}
+                          </span>
+                        </td>
+                        <td className="text-muted">
+                          {new Date(sub.createdAt).toLocaleString("en-IN")}
+                        </td>
+                        <td>
+                          <span
+                            className="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-medium"
+                            style={{ fontSize: "0.75rem" }}
+                          >
+                            🎁 {sub.discountClaimed}
+                          </span>
+                        </td>
+                        <td className="text-end pe-3">
+                          <button
+                            type="button"
+                            className="btn btn-link text-danger p-0 border-0 shadow-none"
+                            onClick={() => handleDeleteSubscriber(sub._id)}
+                            title="Remove subscriber"
+                          >
+                            <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ))}
       </div>
     </div>
   );
