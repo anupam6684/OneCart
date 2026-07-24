@@ -15,9 +15,11 @@ import MailOutlineIcon from "@mui/icons-material/MailOutlined";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const data = await userService.getAll();
 
       console.log(data);
@@ -26,6 +28,8 @@ export default function Users() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,7 +98,25 @@ export default function Users() {
       bg: "#fef2f2",
     },
   ];
-
+  {
+    loading ? (
+      <div className="d-flex justify-content-center align-items-center py-5">
+        <div
+          className="spinner-border text-primary"
+          role="status"
+          style={{ width: "3rem", height: "3rem" }}
+        >
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    ) : (
+      <div className="table-responsive">
+        <table className="table align-middle mb-0">
+          {/* Your existing table */}
+        </table>
+      </div>
+    );
+  }
   return (
     <div
       className="container-fluid p-0"
