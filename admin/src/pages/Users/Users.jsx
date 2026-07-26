@@ -322,9 +322,8 @@ export default function Users() {
                           })
                         : "Never"}
                     </td>
-
                     <td className="fw-semibold text-dark px-4">
-                      {user.orders.length}
+                      {user.orders?.length || 0}
                     </td>
 
                     {/* Account Status Flag Pill */}
