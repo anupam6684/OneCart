@@ -1,10 +1,8 @@
 import api from "./api";
 
-export const userService = {
-  getUser: async () => {
-    return await api.get(`/api/user/profile`);
-  },
+export const addressService = {
   addAddress: async (data) => {
+    console.log(data);
     return await api.post("/api/user/address", data);
   },
 

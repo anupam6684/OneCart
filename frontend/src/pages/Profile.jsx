@@ -249,26 +249,29 @@ export default function Profile() {
                     key={index}
                     className={index > 0 ? "mt-3 pt-3 border-top" : ""}
                   >
-                    <h6 className="fw-bold text-dark mb-1">
-                      {item.name || user.username}
-                    </h6>
-                    <p className="mb-1 text-secondary">
-                      {item.street || "No street details"}
-                    </p>
-                    <p className="mb-0 text-secondary">
-                      {item.city} {item.state} {item.zip}
-                    </p>
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 className="fw-bold text-dark mb-1">
+                          {item.fullName}
+                        </h6>
+
+                        <p className="mb-1 text-secondary">{item.address}</p>
+
+                        <p className="mb-1 text-secondary">
+                          {item.city}, {item.state} - {item.pincode}
+                        </p>
+
+                        <p className="mb-0 text-secondary">📞 {item.phone}</p>
+                      </div>
+
+                      {item.isDefault && (
+                        <span className="badge bg-success">Default</span>
+                      )}
+                    </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-3">
-                  <p className="text-muted mb-0 small">
-                    No address information added yet.
-                  </p>
-                  <button className="btn btn-link btn-sm text-decoration-none p-0 mt-1 fw-medium">
-                    + Add New Address
-                  </button>
-                </div>
+                <p>No saved address</p>
               )}
             </div>
           </div>

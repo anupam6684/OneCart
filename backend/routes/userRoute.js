@@ -6,6 +6,7 @@ import {
   adminLogin,
   profile,
   getAllUser,
+  addAddress,
 } from "../controllers/userController.js";
 import userAuth from "../middleware/userAuth.js";
 
@@ -15,6 +16,9 @@ userRoute.post("/register", registerUser);
 userRoute.post("/login", loginUser);
 userRoute.post("/admin", adminLogin);
 userRoute.get("/profile", userAuth, profile);
+userRoute.post("/address", userAuth, addAddress); // add new address
+userRoute.get("/address", userAuth, addAddress); // get all address form user
+
 userRoute.get("/alluser", adminAuth, getAllUser);
 
 userRoute.get("/verify", adminAuth, (req, res) => {

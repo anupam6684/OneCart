@@ -13,7 +13,6 @@ export default function LetestCollection() {
 
     setLatestProduct(
       products.filter((item) => item.isNewArrival).slice(0, Linit),
-      console.log(products),
     );
   }, [products]);
 
