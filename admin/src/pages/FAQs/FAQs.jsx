@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Badge from "@mui/material/Badge";
 
 // notification
 import { toast } from "react-toastify";
@@ -281,7 +282,16 @@ export default function MessagesAndSubscribers() {
               style={{ fontSize: "0.85rem" }}
               onClick={() => setActiveTab("contact")}
             >
-              📩 Contact Messages ({totalMessages})
+              <Badge
+                badgeContent={unreadMessages}
+                color="error"
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+              >
+                📩 Contact Messages ({totalMessages})
+              </Badge>
             </button>
             <button
               className={`btn btn-sm rounded-2 fw-medium px-3 transition-all ${

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { productService } from "../services/productService";
 import { fetchProducts } from "../controllers/productController";
+import { cartService } from "../controllers/cartController.js";
 
 export const ShopContext = createContext(); // context create, Empty store
 
@@ -22,23 +23,44 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
   // products from DB
 
+  // Fetch cart data
+  const fetchCartData = async () => {
+    try {
+      const response = await cartService.getCart();
+
+      if (response.data.success) {
+        setCartItems(response.data.cartData || {});
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch cart.");
+    }
+  };
+
   // add to cart fuction
-  const addToCart = (itemId, size) => {
+  const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Oops! Please select a size to continue.");
       return;
-    } else {
-      const cartDataCopy = structuredClone(cartItems);
-      if (!cartDataCopy[itemId]) {
-        cartDataCopy[itemId] = {};
-      }
-      if (!cartDataCopy[itemId][size]) {
-        cartDataCopy[itemId][size] = 1;
+    }
+
+    try {
+      const response = await cartService.addToCart({
+        productId: itemId,
+        size,
+      });
+
+      if (response.data.success) {
+        setCartItems(response.data.cartData);
+        toast.success("Successfully added to your shopping cart!");
       } else {
-        cartDataCopy[itemId][size] += 1;
+        toast.error(response.data.message);
       }
-      setCartItems(cartDataCopy);
-      toast.success("successfully added to your shopping cart!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add product to cart.");
     }
   };
 
@@ -56,21 +78,23 @@ const ShopContextProvider = (props) => {
   };
 
   // update Quantity
-  const updateQuantity = (itemId, size, quantity) => {
-    // // prevent invalid quantity
-    // if (quantity < 1) return;
+  const updateQuantity = async (itemId, size, quantity) => {
+    try {
+      const response = await cartService.updateCart({
+        productId: itemId,
+        size,
+        quantity,
+      });
 
-    const cart_data = structuredClone(cartItems);
-    const product = products.find((p) => p._id == itemId); // ID match problem
-
-    if (!product) return;
-
-    // check stock
-    if (quantity <= product.stock) {
-      cart_data[itemId][size] = quantity;
-      setCartItems(cart_data);
-    } else {
-      toast.error("Stock is not available");
+      if (response.data.success) {
+        setCartItems(response.data.cartData);
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update cart.");
     }
   };
 
@@ -96,6 +120,7 @@ const ShopContextProvider = (props) => {
   // Fetch products only once
   useEffect(() => {
     fetchProducts(setProducts);
+    fetchCartData();
   }, []);
 
   // Update cart count whenever cart changes

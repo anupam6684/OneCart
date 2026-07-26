@@ -123,6 +123,72 @@ const profile = async (req, res) => {
   }
 };
 
+const addAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const {
+      fullname,
+      phone,
+      address,
+
+      city,
+
+      state,
+
+      pincode,
+    } = req.body;
+    console.log(
+      fullname,
+      phone,
+      address,
+
+      city,
+
+      state,
+
+      pincode,
+    );
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const newAddress = {
+      fullname,
+      phone,
+      address,
+
+      city,
+
+      state,
+
+      pincode,
+      isDefault: user.address.length === 0,
+    };
+    console.log(newAddress);
+    user.address.push(newAddress);
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Address added successfully",
+      addresses: user.addresses,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
     const users = await userModel.find({}, "-password").sort({ createdAt: -1 });
@@ -140,4 +206,4 @@ const getAllUser = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, profile, getAllUser };
+export { loginUser, registerUser, adminLogin, profile, getAllUser, addAddress };

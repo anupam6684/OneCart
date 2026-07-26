@@ -7,6 +7,8 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import EastIcon from "@mui/icons-material/East";
 import { ShopContext } from "../context/ShopContext";
 
+import { addressService } from "../services/addressService";
+
 export default function Address() {
   const { step, setStep } = useContext(ShopContext);
   const validationSchema = Yup.object({
@@ -48,11 +50,22 @@ export default function Address() {
           pincode: "",
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => {
-          console.log("Address Data:", values);
-          toast.success("Address saved successfully 🚀");
-          setStep(step + 1);
-          resetForm();
+        onSubmit={async (values, { resetForm }) => {
+          try {
+            const response = await addressService.addAddress(values);
+
+            if (response.data.success) {
+              toast.success(response.data.message);
+
+              setStep(step + 1);
+              resetForm();
+            } else {
+              toast.error(response.data.message);
+            }
+          } catch (error) {
+            console.error(error);
+            toast.error("Failed to save address.");
+          }
         }}
       >
         {({ isSubmitting }) => (
