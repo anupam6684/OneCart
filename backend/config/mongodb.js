@@ -1,12 +1,19 @@
+import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 import dns from "dns";
-import env from "./env.js";
+
+dotenv.config();
 
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
+const app = express();
+
+app.use(express.json());
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(env.MONGO_URI, {
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
     });
 
@@ -16,9 +23,9 @@ const connectDB = async () => {
   } catch (error) {
     console.error("❌ MongoDB Connection Failed");
     console.error(error.message);
-
     process.exit(1);
   }
 };
 
 export default connectDB;
+
