@@ -43,7 +43,7 @@ export const logoutUser = () => {
 export const fetchProfile = async () => {
   try {
     const response = await userService.getUser();
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     return error;

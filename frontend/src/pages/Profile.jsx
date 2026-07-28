@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import { fetchProfile } from "../controllers/userController";
+import { fetchProfile, logoutUser } from "../controllers/userController";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { logoutUser } from "../controllers/userController";
-import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -32,7 +30,34 @@ export default function Profile() {
     loadProfile();
   }, []);
 
-  // 1. Loading State (Prevents premature 404 flashing)
+  // Handler to delete an address
+  const handleDeleteAddress = async (addressId, index) => {
+    if (!window.confirm("Are you sure you want to delete this address?"))
+      return;
+
+    try {
+      // TODO: Replace with your actual controller call
+      // await deleteAddressController(addressId);
+
+      setUser((prevUser) => ({
+        ...prevUser,
+        address: prevUser.address.filter((_, i) => i !== index),
+      }));
+
+      toast.success("Address deleted successfully!");
+    } catch (error) {
+      toast.error(error.message || "Failed to delete address.");
+    }
+  };
+
+  // Handler to trigger edit address (navigate to edit page or open modal)
+  const handleEditAddress = (address, index) => {
+    // TODO: Pass address data to your edit modal or edit route
+    console.log("Edit Address:", address, "Index:", index);
+    toast.info("Edit address triggered.");
+  };
+
+  // 1. Loading State
   if (loading) {
     return (
       <div className="container py-5 text-center my-5">
@@ -44,7 +69,7 @@ export default function Profile() {
     );
   }
 
-  // 2. Real 404/Error State
+  // 2. Error / Not Found State
   if (!user) {
     return (
       <div className="container py-5 text-center">
@@ -58,7 +83,6 @@ export default function Profile() {
     );
   }
 
-  // Helper check: MongoDB default address arrays sometimes contain an empty object [ {} ]
   const hasValidAddress =
     user.address &&
     user.address.length > 0 &&
@@ -95,7 +119,7 @@ export default function Profile() {
               <button className="btn btn-primary rounded-pill py-2 fw-medium shadow-sm">
                 Edit Profile
               </button>
-              <button className="btn  btn-outline-secondary rounded-pill py-2 fw-medium">
+              <button className="btn btn-outline-secondary rounded-pill py-2 fw-medium">
                 Change Password
               </button>
               <button
@@ -104,13 +128,13 @@ export default function Profile() {
                   logoutUser();
                   setToken("");
                   navigate("/login");
-                  toast.success("Logout SuccessFully");
+                  toast.success("Logged out successfully");
                 }}
               >
                 Logout Profile
               </button>
-              <button className="btn  btn-danger rounded-pill py-2 fw-medium">
-                Account Delete
+              <button className="btn btn-outline-danger rounded-pill py-2 fw-medium">
+                Delete Account
               </button>
             </div>
           </div>
@@ -126,7 +150,7 @@ export default function Profile() {
                 to="/orders"
                 className="btn btn-sm btn-dark rounded-pill px-3 py-2"
               >
-                📦 View My Orders ({user.orders?.length || 0})
+                📦 View My Orders
               </Link>
             </div>
 
@@ -134,7 +158,7 @@ export default function Profile() {
             <div className="row g-3 mb-4">
               <div className="col-sm-6">
                 <div className="p-3 bg-light rounded-4 border-0">
-                  <span className="d-block text-muted small uppercase fw-semibold">
+                  <span className="d-block text-muted small text-uppercase fw-semibold">
                     Username
                   </span>
                   <span className="fs-6 fw-bold text-dark mt-1 d-block">
@@ -144,7 +168,7 @@ export default function Profile() {
               </div>
               <div className="col-sm-6">
                 <div className="p-3 bg-light rounded-4 border-0">
-                  <span className="d-block text-muted small uppercase fw-semibold">
+                  <span className="d-block text-muted small text-uppercase fw-semibold">
                     Email Address
                   </span>
                   <span className="fs-6 fw-bold text-dark mt-1 d-block text-break">
@@ -154,7 +178,7 @@ export default function Profile() {
               </div>
               <div className="col-sm-6">
                 <div className="p-3 bg-light rounded-4 border-0">
-                  <span className="d-block text-muted small uppercase fw-semibold">
+                  <span className="d-block text-muted small text-uppercase fw-semibold">
                     Account Tier
                   </span>
                   <span className="fs-6 fw-bold text-success mt-1 d-block">
@@ -162,98 +186,70 @@ export default function Profile() {
                   </span>
                 </div>
               </div>
-              <div className="col-sm-6 d-flex justify-content-around">
-                <div className="row">
-                  <div className="p-3 bg-light rounded-4 border-0">
-                    <span className="d-block text-muted small uppercase fw-semibold">
-                      Member Since
-                    </span>
-                    <span className="fs-6 fw-bold text-dark mt-1 d-block">
-                      {user.createdAt ? (
-                        <>
-                          <div>
-                            📅{" "}
-                            {new Date(user.createdAt).toLocaleDateString(
-                              undefined,
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              },
-                            )}
-                          </div>
-                          <div className="text-muted fw-normal small mt-1">
-                            ⏰{" "}
-                            {new Date(user.createdAt).toLocaleTimeString(
-                              undefined,
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                second: "2-digit",
-                              },
-                            )}
-                          </div>
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
-                    </span>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="p-3 bg-light rounded-4 border-0">
-                    <span className="d-block text-muted small uppercase fw-semibold">
-                      Last Update Profile
-                    </span>
-                    <span className="fs-6 fw-bold text-dark mt-1 d-block">
-                      {user.createdAt ? (
-                        <>
-                          <div>
-                            📅{" "}
-                            {new Date(user.updatedAt).toLocaleDateString(
-                              undefined,
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              },
-                            )}
-                          </div>
-                          <div className="text-muted fw-normal small mt-1">
-                            ⏰{" "}
-                            {new Date(user.updatedAt).toLocaleTimeString(
-                              undefined,
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                second: "2-digit",
-                              },
-                            )}
-                          </div>
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
-                    </span>
-                  </div>
+              <div className="col-sm-6">
+                <div className="p-3 bg-light rounded-4 border-0">
+                  <span className="d-block text-muted small text-uppercase fw-semibold">
+                    Member Since
+                  </span>
+                  <span className="fs-6 fw-bold text-dark mt-1 d-block">
+                    {user.createdAt ? (
+                      <>
+                        <div>
+                          📅{" "}
+                          {new Date(user.createdAt).toLocaleDateString(
+                            undefined,
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            },
+                          )}
+                        </div>
+                        <div className="text-muted fw-normal small mt-1">
+                          ⏰{" "}
+                          {new Date(user.createdAt).toLocaleTimeString(
+                            undefined,
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            },
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      "N/A"
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Address Section */}
-            <h5 className="fw-bold mb-3 text-dark">Saved Addresses</h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="fw-bold m-0 text-dark">Saved Addresses</h5>
+              <button className="btn btn-sm btn-outline-primary rounded-pill px-3">
+                + Add New Address
+              </button>
+            </div>
+
             <div className="card border rounded-4 p-3 bg-light">
               {hasValidAddress ? (
                 user.address.map((item, index) => (
                   <div
-                    key={index}
+                    key={item._id || index}
                     className={index > 0 ? "mt-3 pt-3 border-top" : ""}
                   >
                     <div className="d-flex justify-content-between align-items-start">
                       <div>
-                        <h6 className="fw-bold text-dark mb-1">
-                          {item.fullName}
-                        </h6>
+                        <div className="d-flex align-items-center gap-2 mb-1">
+                          <h6 className="fw-bold text-dark m-0">
+                            {item.fullname}
+                          </h6>
+                          {item.isDefault && (
+                            <span className="badge bg-success">Default</span>
+                          )}
+                        </div>
 
                         <p className="mb-1 text-secondary">{item.address}</p>
 
@@ -264,14 +260,30 @@ export default function Profile() {
                         <p className="mb-0 text-secondary">📞 {item.phone}</p>
                       </div>
 
-                      {item.isDefault && (
-                        <span className="badge bg-success">Default</span>
-                      )}
+                      {/* Edit & Delete Actions */}
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                          onClick={() => handleEditAddress(item, index)}
+                          title="Edit Address"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger rounded-pill px-3"
+                          onClick={() =>
+                            handleDeleteAddress(item._id || index, index)
+                          }
+                          title="Delete Address"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <p>No saved address</p>
+                <p className="text-muted mb-0">No saved address found.</p>
               )}
             </div>
           </div>

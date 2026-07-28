@@ -8,6 +8,8 @@ import productRoute from "./routes/productRoute.js";
 import cartRoute from "./routes/cartRoute.js";
 import contactRoute from "./routes/contactRoute.js";
 import subscriberRoute from "./routes/subscriberRoute.js";
+import orderRoute from "./routes/orderRoute.js";
+import adminOrderRoute from "./routes/adminOrderRoute.js";
 
 // app config
 const app = express();
@@ -38,6 +40,8 @@ app.use("/api/product", productRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/contact", contactRoute);
 app.use("/api/subscriber", subscriberRoute);
+app.use("/api/order", orderRoute);
+app.use("/api/admin/order", adminOrderRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello world");
