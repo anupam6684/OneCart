@@ -1,31 +1,30 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import api from "./api";
 
 export const orderService = {
-  getAll: async () => {
-    const response = await fetch(`${API_BASE_URL}/orders`);
-    return response.json();
+  // Get All Orders (Admin Dashboard)
+  getAllOrders: async () => {
+    return await api.get("/api/admin/order");
   },
 
-  getById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${id}`);
-    return response.json();
+  // Get Single Order Details By ID (Admin View Modal)
+  getOrderById: async (orderId) => {
+    return await api.get(`/api/admin/order/${orderId}`);
   },
 
-  create: async (orderData) => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData),
+  // Update Full Order (Admin Edit Popup Modal)
+  updateOrder: async (orderId, updateData) => {
+    return await api.put(`/api/admin/order/edit/${orderId}`, updateData);
+  },
+
+  // Quick Update Order Status (Admin Header / Status Pill Dropdown)
+  updateOrderStatus: async (orderId, orderStatus) => {
+    return await api.put(`/api/admin/order/status/${orderId}`, {
+      orderStatus,
     });
-    return response.json();
   },
 
-  update: async (id, orderData) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData),
-    });
-    return response.json();
+  // Delete Order (Admin Action)
+  deleteOrder: async (orderId) => {
+    return await api.delete(`/api/admin/order/${orderId}`);
   },
 };

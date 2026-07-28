@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { productService } from "../services/productService";
 import { fetchProducts } from "../controllers/productController";
 import { cartService } from "../controllers/cartController.js";
+import { fetchProfile } from "../controllers/userController.js";
 
 export const ShopContext = createContext(); // context create, Empty store
 
@@ -17,28 +18,32 @@ const ShopContextProvider = (props) => {
   const [cartCont, setCartCount] = useState(0);
   const [step, setStep] = useState(1);
   const [products, setProducts] = useState([]);
+  const [userAllData, setUserAllData] = useState();
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   // navigate
   const navigate = useNavigate();
   // products from DB
 
-  // Fetch cart data
-  const fetchCartData = async () => {
+  // Fetch user data
+  const fetchUserData = async () => {
     try {
-      const response = await cartService.getCart();
+      const response = await fetchProfile();
 
-      if (response.data.success) {
-        setCartItems(response.data.cartData || {});
+      if (response.success) {
+        const user = response.user;
+
+        setUserAllData(user);
+        setCartItems(user.cartData || {});
       } else {
-        toast.error(response.data.message);
+        toast.error(response.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to fetch cart.");
+      toast.error("Failed to fetch user data.");
     }
   };
-
   // add to cart fuction
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -120,13 +125,12 @@ const ShopContextProvider = (props) => {
   // Fetch products only once
   useEffect(() => {
     fetchProducts(setProducts);
-    fetchCartData();
-  }, []);
 
-  // Update cart count whenever cart changes
-  useEffect(() => {
-    getCartCount();
-  }, [cartItems]);
+    if (token) {
+      fetchUserData();
+      getCartCount();
+    }
+  }, [token, cartItems]);
 
   const value = {
     currency,
@@ -146,6 +150,10 @@ const ShopContextProvider = (props) => {
     token,
     setToken,
     updateQuantity,
+    userAllData,
+    selectedAddressId,
+    setSelectedAddressId,
+    fetchUserData,
   };
   return (
     <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>

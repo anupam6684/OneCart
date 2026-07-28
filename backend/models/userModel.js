@@ -1,41 +1,72 @@
 import mongoose from "mongoose";
 import { type } from "node:os";
 
+const addressSchema = new mongoose.Schema(
+  {
+    fullname: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    state: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    pincode: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    _id: true, // Generates an _id for each address
+  },
+);
+
 const userSchema = new mongoose.Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-
-    password: {
-      type: String,
-      required: true,
-    },
-
-    role: {
-      type: String,
-      default: "CUSTOMER",
-    },
+    username: String,
+    email: String,
+    password: String,
 
     cartData: {
       type: Object,
       default: {},
     },
 
-    address: {
-      type: Array,
-      default: [],
+    address: { type: [addressSchema], default: [] }, // ✅ Array of address documents
+
+    role: {
+      type: String,
+      default: "CUSTOMER",
     },
+
     status: {
       type: String,
       enum: ["ACTIVE", "PENDING", "SUSPENDED", "BLOCKED"],
@@ -46,14 +77,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    lastLogin: {
-      type: Date,
-      default: null,
-    },
 
     image: {
       type: String,
       default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    },
+
+    lastLogin: {
+      type: Date,
+      default: null,
     },
   },
   {
@@ -62,6 +94,4 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-const userModel = mongoose.models.user || mongoose.model("user", userSchema);
-
-export default userModel;
+export default mongoose.models.user || mongoose.model("user", userSchema);

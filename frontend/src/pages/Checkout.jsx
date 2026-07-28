@@ -5,6 +5,7 @@ import OrderStepper from "../components/OrderStepper";
 import Cart from "../components/Cart";
 import Address from "../components/Address";
 import Payment from "../components/Payment";
+import AddressLayout from "../components/AddressLayout";
 
 export default function Checkout() {
   const { step } = useContext(ShopContext);
@@ -12,7 +13,7 @@ export default function Checkout() {
     <>
       <OrderStepper currentStep={step} />
       {step === 1 && <Cart />}
-      {step === 2 && <Address />}
+      {step === 2 && <AddressLayout />}
       {step === 3 && <Payment />}
     </>
   );
