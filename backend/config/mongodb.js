@@ -1,15 +1,24 @@
 import mongoose from "mongoose";
+import dns from "dns";
+import env from "./env.js";
 
-const connectDb = async () => {
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
+const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL);
-    dbName: "onecart";
+    const conn = await mongoose.connect(env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
 
-    console.log("✅ Connected to MongoDB!");
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`📂 Database: ${conn.connection.name}`);
+
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error.message);
+    console.error("❌ MongoDB Connection Failed");
+    console.error(error.message);
+
     process.exit(1);
   }
 };
 
-export default connectDb;
+export default connectDB;
