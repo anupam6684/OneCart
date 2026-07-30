@@ -2,4 +2,4 @@ User-agent: *
 
 Allow: /
 
-Sitemap: https://one-cart-swart.vercel.app/sitemap.xml
+Sitemap: https://one-cart-swart.vercel.app/sitemapA.xml
