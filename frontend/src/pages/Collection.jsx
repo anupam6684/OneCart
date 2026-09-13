@@ -7,6 +7,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 export default function Collection() {
   const { products, search, showSearch } = useContext(ShopContext);
 
+  const [loading, setLoading] = useState(true);
   const [filterProducts, setFilterProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
@@ -30,10 +31,15 @@ export default function Collection() {
 
   // Filter & Sort Logic
   const applyFilterAndSort = () => {
-    let productsCopy = products ? [...products] : [];
+    if (!products || products.length === 0) {
+      setLoading(true);
+      return;
+    }
+
+    let productsCopy = [...products];
 
     // 1. Search Query Filter
-    if (showSearch && search.trim()) {
+    if (showSearch && search?.trim()) {
       productsCopy = productsCopy.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase().trim()),
       );
@@ -66,6 +72,7 @@ export default function Collection() {
     }
 
     setFilterProducts(productsCopy);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -170,8 +177,29 @@ export default function Collection() {
             </select>
           </div>
 
-          {/* Product Items Grid */}
-          {filterProducts.length === 0 ? (
+          {/* Product Items Grid & Skeleton */}
+          {loading ? (
+            <div className="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="col">
+                  <div className="card border-0 shadow-sm h-100 placeholder-glow overflow-hidden">
+                    <div
+                      className="placeholder bg-secondary-subtle w-100"
+                      style={{ height: "240px", borderRadius: "8px" }}
+                    />
+                    <div className="card-body px-1 py-3">
+                      <span className="placeholder col-8 bg-secondary-subtle rounded mb-2 d-block" />
+                      <span className="placeholder col-5 bg-secondary-subtle rounded d-block" />
+                      <div className="d-flex gap-2 mt-2">
+                        <span className="placeholder col-3 bg-secondary-subtle rounded" />
+                        <span className="placeholder col-2 bg-secondary-subtle rounded" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filterProducts.length === 0 ? (
             <div className="text-center py-5 bg-light rounded-4 border">
               <h6 className="text-muted mb-1">
                 No products found matching your filter
