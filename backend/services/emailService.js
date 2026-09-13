@@ -8,7 +8,7 @@ export const sendOrderStatusEmail = async (status, order, recipientEmail) => {
 
     // Use your Brevo registered email as sender to avoid relay blocks
     const fromAddress =
-      process.env.EMAIL_FROM || `"OneCart" <${process.env.BREVO_USER}>`;
+      process.env.EMAIL_FROM || `"OneCart" <${process.env.SENDER_EMAIL}>`;
 
     const info = await transporter.sendMail({
       from: fromAddress,
