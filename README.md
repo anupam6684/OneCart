@@ -636,7 +636,4 @@ If you find **OneCart** useful or interesting, consider giving the repository a 
 
 **Built with ❤️ using the MERN Stack.**
 
-```
 
-One thing I would change before publishing: replace `your-username/OneCart` with your actual repository, since your public repo is **`anupam6684/OneCart`**.
-```
