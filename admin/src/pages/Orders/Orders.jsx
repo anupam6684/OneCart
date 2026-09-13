@@ -16,10 +16,12 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SortIcon from "@mui/icons-material/Sort";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   // Modal States
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -42,8 +44,12 @@ export default function Orders() {
         setOrders(response.data.orders || []);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Failed to fetch orders");
+      console.error("Fetch orders error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch orders",
+      );
     } finally {
       setLoading(false);
     }
@@ -90,31 +96,85 @@ export default function Orders() {
     }
   };
 
-  // Quick Status Dropdown Handler
+  // Delete Order Handler
+  const handleDeleteOrder = async (orderId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this order? This action cannot be undone.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await orderService.deleteOrder(orderId);
+      if (response.data?.success || response.status === 200) {
+        toast.success("Order deleted successfully!");
+        setOrders((prev) => prev.filter((order) => order._id !== orderId));
+      } else {
+        toast.error(response.data?.message || "Failed to delete order");
+      }
+    } catch (error) {
+      console.error("Delete Order Error:", error);
+      toast.error(error.response?.data?.message || "Failed to delete order");
+    }
+  };
+
+  // Quick Status Dropdown Handler with Payment Status Auto-Sync
   const handleStatusChange = async (orderId, newStatus) => {
     try {
+      setUpdatingOrderId(orderId);
       const response = await orderService.updateOrderStatus(orderId, newStatus);
+      const data = response.data;
 
-      if (response.data?.success || response.status === 200) {
+      if (data?.success || response.status === 200) {
         toast.success(
           `Order status updated to ${formatStatusLabel(newStatus)}`,
         );
 
+        const updatedOrder = data?.order;
+
         setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order._id === orderId
-              ? { ...order, orderStatus: newStatus }
-              : order,
-          ),
+          prevOrders.map((order) => {
+            if (order._id !== orderId) return order;
+            if (updatedOrder) return updatedOrder;
+
+            // Fallback UI reconciliation
+            return {
+              ...order,
+              orderStatus: newStatus,
+              paymentStatus:
+                newStatus === "DELIVERED" && order.paymentMethod === "COD"
+                  ? "PAID"
+                  : order.paymentStatus,
+            };
+          }),
         );
 
         if (selectedOrder && selectedOrder._id === orderId) {
-          setSelectedOrder((prev) => ({ ...prev, orderStatus: newStatus }));
+          setSelectedOrder((prev) =>
+            updatedOrder
+              ? updatedOrder
+              : {
+                  ...prev,
+                  orderStatus: newStatus,
+                  paymentStatus:
+                    newStatus === "DELIVERED" && prev.paymentMethod === "COD"
+                      ? "PAID"
+                      : prev.paymentStatus,
+                },
+          );
         }
+      } else {
+        toast.error(data?.message || "Failed to update status");
       }
     } catch (error) {
       console.error("Failed to update status:", error);
-      toast.error(error.message || "Failed to update order status");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to update order status",
+      );
+    } finally {
+      setUpdatingOrderId(null);
     }
   };
 
@@ -358,7 +418,6 @@ export default function Orders() {
       {/* 2. TOOLBAR (Search, Filter, Sort) */}
       <div className="card border-0 rounded-4 shadow-sm bg-white p-4">
         <div className="row align-items-center g-3 mb-4">
-          {/* Title */}
           <div className="col-12 col-xl-3">
             <h4
               className="fw-bold text-dark mb-0"
@@ -368,10 +427,9 @@ export default function Orders() {
             </h4>
           </div>
 
-          {/* Controls Grid Container */}
           <div className="col-12 col-xl-9">
             <div className="row g-2 align-items-center justify-content-xl-end">
-              {/* 1. Search Box */}
+              {/* Search Box */}
               <div className="col-12 col-sm-6 col-md-4 col-lg-4">
                 <div
                   className="input-group border rounded-3 px-2 bg-light align-items-center w-100"
@@ -401,7 +459,7 @@ export default function Orders() {
                 </div>
               </div>
 
-              {/* 2. Status Filter */}
+              {/* Status Filter */}
               <div className="col-6 col-sm-6 col-md-3 col-lg-3">
                 <div
                   className="input-group border rounded-3 px-2 bg-white align-items-center w-100"
@@ -430,7 +488,7 @@ export default function Orders() {
                 </div>
               </div>
 
-              {/* 3. Date Filter */}
+              {/* Date Filter */}
               <div className="col-6 col-sm-6 col-md-2 col-lg-2">
                 <select
                   value={dateFilter}
@@ -445,7 +503,7 @@ export default function Orders() {
                 </select>
               </div>
 
-              {/* 4. Sort Filter */}
+              {/* Sort Filter */}
               <div className="col-12 col-sm-6 col-md-3 col-lg-3">
                 <div
                   className="input-group border rounded-3 px-2 bg-white align-items-center w-100"
@@ -497,7 +555,7 @@ export default function Orders() {
                 <th className="border-bottom pb-3">Status</th>
                 <th
                   className="border-bottom pb-3 text-end"
-                  style={{ width: "120px" }}
+                  style={{ width: "130px" }}
                 >
                   Actions
                 </th>
@@ -527,6 +585,7 @@ export default function Orders() {
                         0,
                       )
                     : 0;
+                  const isUpdating = updatingOrderId === order._id;
 
                   return (
                     <tr key={order._id}>
@@ -614,84 +673,121 @@ export default function Orders() {
 
                       {/* Total Amount */}
                       <td className="fw-semibold text-dark">
-                        ₹{order.totalAmount}
+                        ₹{(order.totalAmount || 0).toLocaleString("en-IN")}
                       </td>
 
-                      {/* Payment Method */}
+                      {/* Payment Method & Status Badge */}
                       <td>
-                        <span
-                          className="text-secondary small bg-light px-2 py-1 rounded-2 fw-medium"
-                          style={{ fontSize: "0.75rem" }}
-                        >
-                          {order.paymentMethod}
-                        </span>
+                        <div className="d-flex flex-column gap-1 align-items-start">
+                          <span
+                            className="text-secondary small bg-light px-2 py-0.5 rounded-2 fw-medium"
+                            style={{ fontSize: "0.725rem" }}
+                          >
+                            {order.paymentMethod}
+                          </span>
+                          <span
+                            className={`badge ${
+                              order.paymentStatus === "PAID"
+                                ? "bg-success-subtle text-success border border-success-subtle"
+                                : "bg-warning-subtle text-warning-emphasis border border-warning-subtle"
+                            }`}
+                            style={{ fontSize: "0.68rem" }}
+                          >
+                            {order.paymentStatus || "PENDING"}
+                          </span>
+                        </div>
                       </td>
 
-                      {/* Status Selector */}
+                      {/* Status Selector Dropdown */}
                       <td>
-                        <select
-                          value={order.orderStatus}
-                          onChange={(e) =>
-                            handleStatusChange(order._id, e.target.value)
-                          }
-                          className="form-select form-select-sm border-0 fw-semibold cursor-pointer shadow-none text-center px-3 py-1"
-                          style={{
-                            fontSize: "0.75rem",
-                            width: "auto",
-                            backgroundColor: statusStyles.bg,
-                            color: statusStyles.color,
-                            borderRadius: "20px",
-                            appearance: "none",
-                            WebkitAppearance: "none",
-                            MozAppearance: "none",
-                            backgroundImage: "none",
-                            paddingRight: "12px",
-                          }}
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="CONFIRMED">Confirmed</option>
-                          <option value="PACKED">Packed</option>
-                          <option value="SHIPPED">Shipped</option>
-                          <option value="OUT_FOR_DELIVERY">
-                            Out for Delivery
-                          </option>
-                          <option value="DELIVERED">Delivered</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
+                        <div className="position-relative d-inline-block">
+                          <select
+                            value={order.orderStatus}
+                            disabled={isUpdating}
+                            onChange={(e) =>
+                              handleStatusChange(order._id, e.target.value)
+                            }
+                            className="form-select form-select-sm border-0 fw-semibold cursor-pointer shadow-none text-center px-3 py-1"
+                            style={{
+                              fontSize: "0.75rem",
+                              width: "auto",
+                              backgroundColor: statusStyles.bg,
+                              color: statusStyles.color,
+                              borderRadius: "20px",
+                              opacity: isUpdating ? 0.6 : 1,
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                              paddingRight: "12px",
+                            }}
+                          >
+                            <option value="PENDING">Pending</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="PACKED">Packed</option>
+                            <option value="SHIPPED">Shipped</option>
+                            <option value="OUT_FOR_DELIVERY">
+                              Out for Delivery
+                            </option>
+                            <option value="DELIVERED">Delivered</option>
+                            <option value="CANCELLED">Cancelled</option>
+                          </select>
+                        </div>
                       </td>
 
                       {/* Action Buttons */}
                       <td className="text-end">
-                        <div className="d-inline-flex gap-2">
-                          <button
-                            onClick={() => handleOpenEditModal(order)}
-                            className="btn p-2 border rounded-3 text-primary bg-light-hover d-flex align-items-center shadow-none"
-                            style={{ borderColor: "#e2e8f0" }}
-                            title="Edit Order"
-                          >
-                            <EditOutlinedIcon sx={{ fontSize: 16 }} />
-                          </button>
-                          <button
-                            onClick={() => handleViewOrder(order)}
-                            className="btn p-2 border rounded-3 text-secondary bg-light-hover d-flex align-items-center shadow-none"
-                            style={{ borderColor: "#e2e8f0" }}
-                            title="View Full Details"
-                          >
-                            <VisibilityOutlinedIcon sx={{ fontSize: 16 }} />
-                          </button>
-                          {order.orderStatus === "PENDING" && (
-                            <button
-                              onClick={() =>
-                                handleStatusChange(order._id, "SHIPPED")
-                              }
-                              className="btn p-2 border rounded-3 text-primary bg-light-hover d-flex align-items-center shadow-none"
-                              style={{ borderColor: "#e2e8f0" }}
-                              title="Mark As Dispatched"
-                            >
-                              <LocalShippingOutlinedIcon
-                                sx={{ fontSize: 16 }}
-                              />
-                            </button>
+                        <div className="d-inline-flex gap-2 align-items-center">
+                          {isUpdating ? (
+                            <span
+                              className="spinner-border spinner-border-sm text-primary"
+                              role="status"
+                            />
+                          ) : (
+                            <>
+                              {" "}
+                              <button
+                                onClick={() => handleViewOrder(order)}
+                                className="btn p-2 border rounded-3 text-secondary bg-light-hover d-flex align-items-center shadow-none"
+                                style={{ borderColor: "#e2e8f0" }}
+                                title="View Full Details"
+                              >
+                                <VisibilityOutlinedIcon sx={{ fontSize: 16 }} />
+                              </button>
+                              <button
+                                onClick={() => handleOpenEditModal(order)}
+                                className="btn p-2 border rounded-3 text-primary bg-light-hover d-flex align-items-center shadow-none"
+                                style={{ borderColor: "#e2e8f0" }}
+                                title="Edit Order"
+                              >
+                                <EditOutlinedIcon sx={{ fontSize: 16 }} />
+                              </button>
+                              {order.orderStatus === "PENDING" && (
+                                <button
+                                  onClick={() =>
+                                    handleStatusChange(order._id, "CONFIRMED")
+                                  }
+                                  className="btn p-2 border rounded-3 text-primary bg-light-hover d-flex align-items-center shadow-none"
+                                  style={{ borderColor: "#e2e8f0" }}
+                                  title="Confirm Order"
+                                >
+                                  <LocalShippingOutlinedIcon
+                                    sx={{ fontSize: 16 }}
+                                  />
+                                </button>
+                              )}
+                              {/* Delete Order Button */}
+                              <button
+                                onClick={() => handleDeleteOrder(order._id)}
+                                className="btn p-2 border rounded-3 text-danger bg-light-hover d-flex align-items-center shadow-none"
+                                style={{
+                                  borderColor: "#fee2e2",
+                                  backgroundColor: "#fff5f5",
+                                }}
+                                title="Delete Order"
+                              >
+                                <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>

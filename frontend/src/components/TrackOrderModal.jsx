@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 // Material UI Icons
@@ -7,8 +7,16 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 
-export default function TrackOrderModal({ show, item, handleClose }) {
+export default function TrackOrderModal({
+  show,
+  item,
+  handleClose,
+  onDownloadInvoice,
+}) {
+  const [downloading, setDownloading] = useState(false);
+
   if (!show || !item) return null;
 
   // Standard tracking stages matching orderStatus enum
@@ -23,6 +31,7 @@ export default function TrackOrderModal({ show, item, handleClose }) {
 
   const orderStatus = item.orderStatus?.toUpperCase();
   const isCancelled = orderStatus === "CANCELLED";
+  const isDelivered = orderStatus === "DELIVERED";
 
   // Determine active tracking step
   const currentStep = isCancelled
@@ -42,6 +51,20 @@ export default function TrackOrderModal({ show, item, handleClose }) {
           hour: "2-digit",
           minute: "2-digit",
         });
+  };
+
+  // Invoice Download Handler
+  const handleInvoiceClick = async () => {
+    try {
+      setDownloading(true);
+      if (onDownloadInvoice) {
+        await onDownloadInvoice(item);
+      } else if (item.invoiceUrl) {
+        window.open(item.invoiceUrl, "_blank");
+      }
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -71,7 +94,9 @@ export default function TrackOrderModal({ show, item, handleClose }) {
                   className={`badge rounded-2 px-2 py-1 ms-2 ${
                     isCancelled
                       ? "bg-danger-subtle text-danger"
-                      : "bg-primary-subtle text-primary"
+                      : isDelivered
+                        ? "bg-success-subtle text-success"
+                        : "bg-primary-subtle text-primary"
                   }`}
                   style={{ fontSize: "0.75rem" }}
                 >
@@ -189,7 +214,8 @@ export default function TrackOrderModal({ show, item, handleClose }) {
                                 className="text-success small fw-medium"
                                 style={{ fontSize: "0.75rem" }}
                               >
-                                In Progress {formatDate(item.updatedAt)}
+                                {isDelivered ? "Completed" : "In Progress"}{" "}
+                                {formatDate(item.updatedAt)}
                               </span>
                             )}
                           </div>
@@ -316,10 +342,25 @@ export default function TrackOrderModal({ show, item, handleClose }) {
           </div>
 
           {/* 3. MODAL FOOTER */}
-          <div className="modal-footer border-top p-3 bg-light">
+          <div className="modal-footer border-top p-3 bg-light d-flex justify-content-between align-items-center">
+            {/* Conditional Delivery Invoice Button */}
+            <div>
+              {isDelivered && (
+                <button
+                  type="button"
+                  className="btn btn-outline-dark btn-sm rounded-3 d-flex align-items-center gap-2 px-3 shadow-none"
+                  onClick={handleInvoiceClick}
+                  disabled={downloading}
+                >
+                  <DownloadOutlinedIcon sx={{ fontSize: 18 }} />
+                  {downloading ? "Preparing Invoice..." : "Download Invoice"}
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
-              className="btn btn-secondary btn-sm px-4 rounded-3"
+              className="btn btn-secondary btn-sm px-4 rounded-3 shadow-none"
               onClick={handleClose}
             >
               Close
@@ -335,4 +376,5 @@ TrackOrderModal.propTypes = {
   show: PropTypes.bool.isRequired,
   item: PropTypes.object,
   handleClose: PropTypes.func.isRequired,
+  onDownloadInvoice: PropTypes.func,
 };

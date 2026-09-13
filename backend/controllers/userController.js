@@ -138,17 +138,6 @@ const addAddress = async (req, res) => {
 
       pincode,
     } = req.body;
-    console.log(
-      fullname,
-      phone,
-      address,
-
-      city,
-
-      state,
-
-      pincode,
-    );
 
     const user = await userModel.findById(userId);
 
@@ -171,7 +160,7 @@ const addAddress = async (req, res) => {
       pincode,
       isDefault: user.address.length === 0,
     };
-    console.log(newAddress);
+
     user.address.push(newAddress);
 
     await user.save();

@@ -6,6 +6,8 @@ import { orderService } from "../services/orderService";
 import { toast } from "react-toastify";
 import TrackOrderModal from "../components/TrackOrderModal";
 
+import { downloadInvoicePDF } from "../utils/generateInvoice";
+
 // Material UI Icons
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -109,7 +111,7 @@ export default function Orders() {
     }
   };
 
-  // CANCEL ORDER HANDLER
+  // Cancel Order Handler
   const handleCancelOrder = async (orderId) => {
     const confirmCancel = window.confirm(
       "Are you sure you want to cancel this order?",
@@ -145,15 +147,25 @@ export default function Orders() {
     }
   };
 
+  // Invoice Download Trigger
+  const handleDownloadInvoice = async (orderItem) => {
+    try {
+      downloadInvoicePDF(orderItem);
+      toast.success("Downloading invoice...");
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      toast.error("Failed to generate PDF invoice.");
+    }
+  };
+
   useEffect(() => {
     fetchUserOrders();
   }, [token]);
 
-  // Derived Filtered & Sorted Orders
+  // Filter & Sort Calculations
   const filteredAndSortedOrders = useMemo(() => {
     return orderItems
       .filter((item) => {
-        // 1. Search Filter (Matches Item Name, Order ID, or Price)
         const query = searchQuery.toLowerCase().trim();
         const matchesSearch =
           !query ||
@@ -161,7 +173,6 @@ export default function Orders() {
           item.orderId?.toLowerCase().includes(query) ||
           String(item.price).includes(query);
 
-        // 2. Status Filter
         const itemStatus = item.orderStatus?.toUpperCase();
         let matchesStatus = true;
         if (statusFilter === "IN_TRANSIT") {
@@ -176,7 +187,6 @@ export default function Orders() {
           matchesStatus = itemStatus === statusFilter;
         }
 
-        // 3. Date Range Filter
         let matchesDate = true;
         if (dateFilter !== "ALL" && item.createdAt) {
           const orderDate = new Date(item.createdAt);
@@ -196,7 +206,6 @@ export default function Orders() {
         return matchesSearch && matchesStatus && matchesDate;
       })
       .sort((a, b) => {
-        // Sort Handlers
         if (sortBy === "NEWEST") {
           return new Date(b.createdAt) - new Date(a.createdAt);
         }
@@ -213,7 +222,6 @@ export default function Orders() {
       });
   }, [orderItems, searchQuery, statusFilter, dateFilter, sortBy]);
 
-  // Dynamic Metric Counts for Summary Cards
   const totalCount = orderItems.length;
   const inTransitCount = orderItems.filter((i) =>
     ["PENDING", "CONFIRMED", "PACKED", "SHIPPED", "OUT_FOR_DELIVERY"].includes(
@@ -234,19 +242,6 @@ export default function Orders() {
     setSortBy("NEWEST");
   };
 
-  if (loading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center py-5"
-        style={{ minHeight: "50vh" }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading Orders...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className="container py-4"
@@ -257,93 +252,116 @@ export default function Orders() {
         <Title text1="MY" text2="ORDERS" />
       </div>
 
-      {/* 1. TOP SUMMARY METRIC CARDS (Interactive Quick Filters) */}
+      {/* 1. TOP SUMMARY METRIC CARDS */}
       <div className="row g-3 mb-4">
-        <div className="col-6 col-md-3">
-          <div
-            onClick={() => setStatusFilter("ALL")}
-            className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
-              statusFilter === "ALL"
-                ? "border border-dark border-2 bg-light"
-                : "bg-white"
-            }`}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <span className="text-muted small fw-semibold">Total Orders</span>
-              <ShoppingBagOutlinedIcon
-                className="text-primary"
-                sx={{ fontSize: 20 }}
-              />
+        {loading ? (
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="col-6 col-md-3">
+              <div className="card border-0 p-3 rounded-4 shadow-sm bg-white placeholder-glow">
+                <span className="placeholder col-7 bg-secondary-subtle rounded mb-2 d-block" />
+                <span
+                  className="placeholder col-4 bg-secondary-subtle rounded d-block"
+                  style={{ height: "24px" }}
+                />
+              </div>
             </div>
-            <h4 className="fw-bold text-dark mb-0">{totalCount}</h4>
-          </div>
-        </div>
+          ))
+        ) : (
+          <>
+            <div className="col-6 col-md-3">
+              <div
+                onClick={() => setStatusFilter("ALL")}
+                className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
+                  statusFilter === "ALL"
+                    ? "border border-dark border-2 bg-light"
+                    : "bg-white"
+                }`}
+              >
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <span className="text-muted small fw-semibold">
+                    Total Orders
+                  </span>
+                  <ShoppingBagOutlinedIcon
+                    className="text-primary"
+                    sx={{ fontSize: 20 }}
+                  />
+                </div>
+                <h4 className="fw-bold text-dark mb-0">{totalCount}</h4>
+              </div>
+            </div>
 
-        <div className="col-6 col-md-3">
-          <div
-            onClick={() => setStatusFilter("IN_TRANSIT")}
-            className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
-              statusFilter === "IN_TRANSIT"
-                ? "border border-warning border-2 bg-light"
-                : "bg-white"
-            }`}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <span className="text-muted small fw-semibold">In Transit</span>
-              <LocalShippingOutlinedIcon
-                className="text-warning"
-                sx={{ fontSize: 20 }}
-              />
+            <div className="col-6 col-md-3">
+              <div
+                onClick={() => setStatusFilter("IN_TRANSIT")}
+                className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
+                  statusFilter === "IN_TRANSIT"
+                    ? "border border-warning border-2 bg-light"
+                    : "bg-white"
+                }`}
+              >
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <span className="text-muted small fw-semibold">
+                    In Transit
+                  </span>
+                  <LocalShippingOutlinedIcon
+                    className="text-warning"
+                    sx={{ fontSize: 20 }}
+                  />
+                </div>
+                <h4 className="fw-bold text-dark mb-0">{inTransitCount}</h4>
+              </div>
             </div>
-            <h4 className="fw-bold text-dark mb-0">{inTransitCount}</h4>
-          </div>
-        </div>
 
-        <div className="col-6 col-md-3">
-          <div
-            onClick={() => setStatusFilter("DELIVERED")}
-            className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
-              statusFilter === "DELIVERED"
-                ? "border border-success border-2 bg-light"
-                : "bg-white"
-            }`}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <span className="text-muted small fw-semibold">Delivered</span>
-              <CheckCircleOutlineIcon
-                className="text-success"
-                sx={{ fontSize: 20 }}
-              />
+            <div className="col-6 col-md-3">
+              <div
+                onClick={() => setStatusFilter("DELIVERED")}
+                className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
+                  statusFilter === "DELIVERED"
+                    ? "border border-success border-2 bg-light"
+                    : "bg-white"
+                }`}
+              >
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <span className="text-muted small fw-semibold">
+                    Delivered
+                  </span>
+                  <CheckCircleOutlineIcon
+                    className="text-success"
+                    sx={{ fontSize: 20 }}
+                  />
+                </div>
+                <h4 className="fw-bold text-dark mb-0">{deliveredCount}</h4>
+              </div>
             </div>
-            <h4 className="fw-bold text-dark mb-0">{deliveredCount}</h4>
-          </div>
-        </div>
 
-        <div className="col-6 col-md-3">
-          <div
-            onClick={() => setStatusFilter("CANCELLED")}
-            className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
-              statusFilter === "CANCELLED"
-                ? "border border-danger border-2 bg-light"
-                : "bg-white"
-            }`}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-1">
-              <span className="text-muted small fw-semibold">Cancelled</span>
-              <CancelOutlinedIcon
-                className="text-danger"
-                sx={{ fontSize: 20 }}
-              />
+            <div className="col-6 col-md-3">
+              <div
+                onClick={() => setStatusFilter("CANCELLED")}
+                className={`card border-0 p-3 rounded-4 shadow-sm cursor-pointer transition-all ${
+                  statusFilter === "CANCELLED"
+                    ? "border border-danger border-2 bg-light"
+                    : "bg-white"
+                }`}
+              >
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <span className="text-muted small fw-semibold">
+                    Cancelled
+                  </span>
+                  <CancelOutlinedIcon
+                    className="text-danger"
+                    sx={{ fontSize: 20 }}
+                  />
+                </div>
+                <h4 className="fw-bold text-dark mb-0">{cancelledCount}</h4>
+              </div>
             </div>
-            <h4 className="fw-bold text-dark mb-0">{cancelledCount}</h4>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
       {/* 2. SEARCH, FILTER & SORT TOOLBAR */}
       <div className="card border-0 shadow-sm p-3 rounded-4 bg-white mb-4">
         <div className="row g-2 align-items-center">
-          {/* Search Box */}
           <div className="col-12 col-md-4">
             <div
               className="input-group border rounded-3 px-2 bg-light align-items-center"
@@ -369,7 +387,6 @@ export default function Orders() {
             </div>
           </div>
 
-          {/* Status Filter */}
           <div className="col-6 col-md-3">
             <div
               className="input-group border rounded-3 px-2 bg-white align-items-center"
@@ -392,7 +409,6 @@ export default function Orders() {
             </div>
           </div>
 
-          {/* Date Filter */}
           <div className="col-6 col-md-2">
             <select
               value={dateFilter}
@@ -407,7 +423,6 @@ export default function Orders() {
             </select>
           </div>
 
-          {/* Sort By */}
           <div className="col-12 col-md-3">
             <div
               className="input-group border rounded-3 px-2 bg-white align-items-center"
@@ -431,7 +446,40 @@ export default function Orders() {
 
       {/* 3. ORDER ITEMS LIST */}
       <div className="col-12">
-        {filteredAndSortedOrders.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="card mb-3 shadow-sm border-0 rounded-4 overflow-hidden bg-white placeholder-glow p-3"
+            >
+              <div className="row g-3 align-items-center">
+                <div className="col-12 col-md-5 d-flex gap-3 align-items-center">
+                  <div
+                    className="placeholder bg-secondary-subtle rounded-3 flex-shrink-0"
+                    style={{ width: "85px", height: "85px" }}
+                  />
+                  <div className="w-100">
+                    <span className="placeholder col-9 bg-secondary-subtle rounded mb-2 d-block" />
+                    <span className="placeholder col-6 bg-secondary-subtle rounded mb-2 d-block" />
+                    <span className="placeholder col-4 bg-secondary-subtle rounded d-block" />
+                  </div>
+                </div>
+                <div className="col-6 col-md-3 text-start text-md-center">
+                  <span
+                    className="placeholder col-8 bg-secondary-subtle rounded-pill d-inline-block"
+                    style={{ height: "28px" }}
+                  />
+                </div>
+                <div className="col-6 col-md-4 text-end text-md-center">
+                  <span
+                    className="placeholder col-6 bg-secondary-subtle rounded-3 d-inline-block"
+                    style={{ height: "34px" }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : filteredAndSortedOrders.length === 0 ? (
           <div className="text-center py-5 bg-light rounded-4 border">
             <h5 className="text-muted mb-2">No matching orders found</h5>
             <p className="text-secondary small mb-3">
@@ -447,8 +495,6 @@ export default function Orders() {
         ) : (
           filteredAndSortedOrders.map((item, index) => {
             const statusColor = getStatusColor(item.orderStatus);
-
-            // Check if order can still be cancelled
             const canCancel = ["PENDING", "CONFIRMED", "PACKED"].includes(
               item.orderStatus?.toUpperCase(),
             );
@@ -543,7 +589,7 @@ export default function Orders() {
                     </div>
                   </div>
 
-                  {/* Right: Actions (Track & Cancel Buttons) */}
+                  {/* Right: Actions */}
                   <div className="col-6 col-md-4 text-end text-md-center">
                     <div className="d-inline-flex gap-2 flex-wrap justify-content-end justify-content-md-center">
                       <button
@@ -578,6 +624,7 @@ export default function Orders() {
         show={showTrackModal}
         item={selectedTrackItem}
         handleClose={() => setShowTrackModal(false)}
+        onDownloadInvoice={handleDownloadInvoice}
       />
     </div>
   );
