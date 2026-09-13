@@ -36,7 +36,7 @@ const getCart = async (req, res) => {
     const userId = req.user.id;
 
     const user = await userModel.findById(userId).select("cartData");
-    console.log(user);
+
     res.json({
       success: true,
       cartData: user.cartData,

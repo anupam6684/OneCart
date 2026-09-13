@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 const adminAuth = async (req, res, next) => {
   try {
     const token = req.headers.token;
-    console.log("HEADER TOKEN:", token);
 
     if (!token) {
       return res.json({
@@ -13,7 +12,6 @@ const adminAuth = async (req, res, next) => {
     }
 
     const token_Dcode = await jwt.verify(token, process.env.JWT_SECRET);
-    console.log(token_Dcode);
 
     if (
       token_Dcode.id !==
