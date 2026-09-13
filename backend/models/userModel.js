@@ -87,6 +87,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    // Add these fields inside your userSchema definition:
+    resetOtp: {
+      type: String,
+      default: null,
+    },
+    resetOtpExpire: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -1,4 +1,5 @@
 import userModel from "../models/userModel.js";
+import { v2 as cloudinary } from "cloudinary";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -195,4 +196,114 @@ const getAllUser = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, profile, getAllUser, addAddress };
+const updateProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { username, email, phone } = req.body;
+
+    let imageUrl;
+
+    // Upload file buffer directly to Cloudinary if a file was provided
+    if (req.file) {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+      const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+        folder: "user_avatars",
+        resource_type: "image",
+      });
+
+      imageUrl = uploadResponse.secure_url;
+    }
+
+    const updateFields = {
+      username,
+      email,
+      phone,
+      ...(imageUrl && { image: imageUrl }),
+    };
+
+    const updatedUser = await userModel
+      .findByIdAndUpdate(userId, updateFields, {
+        new: true,
+        runValidators: true,
+      })
+      .select("-password");
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log(userId);
+    const { currentPassword, newPassword } = req.body;
+    console.log(currentPassword, newPassword);
+
+    // 1. Fetch user including the hashed password
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // 2. Validate current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Current password is incorrect" });
+    }
+
+    // 3. Prevent reusing the exact same password
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be the same as your old password",
+      });
+    }
+
+    // 4. Hash and save the new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+export {
+  loginUser,
+  registerUser,
+  adminLogin,
+  profile,
+  getAllUser,
+  addAddress,
+  updateProfile,
+  changePassword,
+};
