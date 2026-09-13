@@ -14,6 +14,9 @@ import Product from "./pages/Product";
 import { ToastContainer, toast } from "react-toastify";
 import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
+import UserProfileEdit from "./components/UserProfileEdit";
+import ChangePassword from "./components/ChangePassword";
+import ForgotPasswordOtp from "./pages/ForgotPasswordOtp";
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
         <Route path="/collection" element={<Collection />} />
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/passwordchange" element={<ChangePassword />} />
+        <Route path="/forgot-password" element={<ForgotPasswordOtp />} />
+        <Route path="/profile/edit" element={<UserProfileEdit />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />

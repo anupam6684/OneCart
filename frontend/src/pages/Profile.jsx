@@ -111,15 +111,22 @@ export default function Profile() {
             </div>
 
             <h3 className="fw-bold mt-4 mb-1 text-dark">{user.username}</h3>
-            <p className="text-muted small mb-4">{user.email}</p>
+            <p className="text-muted small ">{user.email}</p>
+            <p className="text-muted small mb-4">{user.phone}</p>
 
             <hr className="text-muted opacity-25" />
 
             <div className="d-grid gap-2 mt-3">
-              <button className="btn btn-primary rounded-pill py-2 fw-medium shadow-sm">
+              <button
+                className="btn btn-primary rounded-pill py-2 fw-medium shadow-sm"
+                onClick={() => navigate("/profile/edit")}
+              >
                 Edit Profile
               </button>
-              <button className="btn btn-outline-secondary rounded-pill py-2 fw-medium">
+              <button
+                className="btn btn-outline-secondary rounded-pill py-2 fw-medium"
+                onClick={() => navigate("/profile/passwordchange")}
+              >
                 Change Password
               </button>
               <button
@@ -169,10 +176,14 @@ export default function Profile() {
               <div className="col-sm-6">
                 <div className="p-3 bg-light rounded-4 border-0">
                   <span className="d-block text-muted small text-uppercase fw-semibold">
-                    Email Address
+                    Email Address & Phone Number
                   </span>
                   <span className="fs-6 fw-bold text-dark mt-1 d-block text-break">
                     {user.email}
+                  </span>
+
+                  <span className="fs-6 fw-bold text-dark mt-1 d-block text-break">
+                    {user.phone}
                   </span>
                 </div>
               </div>

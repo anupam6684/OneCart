@@ -9,7 +9,7 @@ import cartRoute from "./routes/cartRoute.js";
 import contactRoute from "./routes/contactRoute.js";
 import subscriberRoute from "./routes/subscriberRoute.js";
 import orderRoute from "./routes/orderRoute.js";
-import adminOrderRoute from "./routes/adminOrderRoute.js";
+import adminOrderRoute from "./routes/adminorderRoute.js";
 
 // app config
 const app = express();

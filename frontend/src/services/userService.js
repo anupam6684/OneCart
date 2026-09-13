@@ -4,19 +4,26 @@ export const userService = {
   getUser: async () => {
     return await api.get(`/api/user/profile`);
   },
-  addAddress: async (data) => {
-    return await api.post("/api/user/address", data);
+  // Update Profile (Handles both JSON and FormData for image uploads)
+  updateProfile: async (userId, data) => {
+    console.log(userId, data);
+    const isFormData = data instanceof FormData;
+    return await api.put(`/api/user/profile/${userId}`, data, {
+      headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    });
   },
 
-  getAddresses: async () => {
-    return await api.get("/api/user/address");
+  // change password
+  changePassword: async (data) => {
+    return await api.put(`/api/user/changepassword`, data);
   },
 
-  updateAddress: async (id, data) => {
-    return await api.put(`/api/user/address/${id}`, data);
+  // otp reset
+  sendResetOtp: async (email) => {
+    return await api.post("/api/user/send-reset-otp", { email });
   },
 
-  deleteAddress: async (id) => {
-    return await api.delete(`/api/user/address/${id}`);
+  resetPasswordOtp: async (data) => {
+    return await api.post("/api/user/reset-password-otp", data);
   },
 };

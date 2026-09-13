@@ -50,9 +50,6 @@ export const fetchProfile = async () => {
   }
 };
 
-// Update Profile
-export const updateProfile = async () => {};
-
 // Change Password
 export const changePassword = async () => {};
 

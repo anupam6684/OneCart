@@ -131,7 +131,12 @@ export default function Login() {
                 />
               </div>
               {currentState === "login" ? (
-                <span className=" btn">Forgot your password?</span>
+                <button
+                  className=" btn"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Forgot your password?
+                </button>
               ) : (
                 ""
               )}
