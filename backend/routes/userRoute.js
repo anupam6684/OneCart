@@ -9,6 +9,8 @@ import {
   addAddress,
   updateProfile,
   changePassword,
+  sendLoginOtp,
+  verifyLoginOtp,
 } from "../controllers/userController.js";
 
 import { sendPasswordResetOtp } from "../controllers/sendOtpController.js";
@@ -33,6 +35,10 @@ userRoute.get("/address", userAuth, addAddress); // get all address form user
 
 userRoute.post("/send-reset-otp", sendPasswordResetOtp);
 userRoute.post("/reset-password-otp", resetPasswordWithOtp);
+// otp log in
+
+userRoute.post("/login-otp", sendLoginOtp);
+userRoute.post("/verify-login-otp", verifyLoginOtp);
 
 userRoute.get("/alluser", adminAuth, getAllUser);
 
