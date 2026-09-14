@@ -96,6 +96,8 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    loginOtp: { type: String, default: null },
+    loginOtpExpire: { type: Number, default: null },
   },
   {
     timestamps: true,
